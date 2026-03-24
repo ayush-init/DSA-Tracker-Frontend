@@ -58,6 +58,9 @@ export default function StudentLeaderboardPage() {
     fetchYourRank();
   }, [debouncedSearch]);
 
+  console.log("yourRank", yourRank);
+
+  
   if (loading && !yourRank) {
     return (
       <div className="flex flex-col space-y-6">
