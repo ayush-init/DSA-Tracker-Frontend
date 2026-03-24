@@ -11,14 +11,19 @@ import {
 import {
   Plus,
   Search,
-  FolderEdit,
+  Pencil,
   Trash2,
   HelpCircle,
   ExternalLink,
-  RotateCcw
+  RotateCcw,
+  Code,
+  BookOpen,
+  Brain,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Select } from '@/components/Select';
 import {
   Table,
@@ -29,6 +34,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -36,18 +47,67 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination } from '@/components/Pagination';
 
 function BadgeByLevel({ level }: { level: string }) {
-  const cn = level === 'EASY' ? 'bg-green-500/10 text-green-500' :
-    level === 'MEDIUM' ? 'bg-yellow-500/10 text-yellow-600' :
-      'bg-red-500/10 text-red-500';
-  return <span className={`px-2 py-0.5 rounded text-xs font-semibold ${cn}`}>{level}</span>;
+  const variant = level === 'EASY' ? 'default' :
+    level === 'MEDIUM' ? 'secondary' :
+      'destructive';
+  const colorClass = level === 'EASY' ? 'bg-green-100 text-green-800 border-green-200' :
+    level === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+      'bg-red-100 text-red-800 border-red-200';
+  
+  return (
+    <Badge className={colorClass} variant="outline">
+      {level}
+    </Badge>
+  );
+}
+
+function BadgeByType({ type }: { type: string }) {
+  const variant = type === 'HOMEWORK' ? 'default' : 'secondary';
+  return <Badge variant={variant}>{type.toLowerCase()}</Badge>;
+}
+
+function PlatformIcon({ platform }: { platform: string }) {
+  const Icon = platform === 'LEETCODE' ? Code :
+    platform === 'GFG' ? BookOpen :
+    platform === 'INTERVIEWBIT' ? Brain :
+    HelpCircle;
+  
+  return <Icon className="w-4 h-4 mr-2" />;
 }
 
 export default function AdminQuestionsBankPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Helper function to check if any filters are active
+  const hasActiveFilters = () => {
+    const topic = searchParams.get('topic');
+    return (
+      qSearch ||
+      qLevel ||
+      qPlatform ||
+      qType ||
+      (topic && topic !== 'all')
+    );
+  };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setQSearch('');
+    setQLevel('');
+    setQPlatform('');
+    setQType('');
+    setPage(1);
+    // Clear all URL parameters
+    const params = new URLSearchParams();
+    params.set('page', '1');
+    router.replace(`/admin/questions?${params.toString()}`);
+  };
 
   // State
   const [questions, setQuestions] = useState<any[]>([]);
@@ -91,7 +151,7 @@ export default function AdminQuestionsBankPage() {
       // Import api locally here to hit the topics endpoint
       const { default: api } = await import('@/lib/api');
       const res = await api.get('/api/admin/topics');
-      setAllTopics(res.data.map((t: any) => ({ label: t.topic_name, value: t.id.toString() })));
+      setAllTopics(res.data.map((t: any) => ({ label: t.topic_name, value: t.slug })));
     } catch (err) {
       console.error(err);
     }
@@ -103,10 +163,12 @@ export default function AdminQuestionsBankPage() {
     if (qLevel) params.set('level', qLevel);
     if (qPlatform) params.set('platform', qPlatform);
     if (qType) params.set('type', qType);
+    const topic = searchParams.get('topic');
+    if (topic && topic !== 'all') params.set('topic', topic);
     if (page > 1) params.set('page', page.toString());
     if (limit !== 10) params.set('limit', limit.toString());
     router.replace(`/admin/questions?${params.toString()}`);
-  }, [qSearch, qLevel, qPlatform, qType, page, limit, router]);
+  }, [qSearch, qLevel, qPlatform, qType, page, limit, searchParams.get('topic'), router]);
 
   const loadQuestions = useCallback(async () => {
     setLoading(true);
@@ -116,7 +178,7 @@ export default function AdminQuestionsBankPage() {
       if (qLevel) p.level = qLevel;
       if (qPlatform) p.platform = qPlatform;
       if (qType) p.type = qType;
-      if (searchParams.get('topic') && searchParams.get('topic') !== 'all') p.topic_id = searchParams.get('topic');
+      if (searchParams.get('topic') && searchParams.get('topic') !== 'all') p.topicSlug = searchParams.get('topic');
 
       const res = await getAdminQuestions(p);
       setQuestions(res.data);
@@ -127,7 +189,7 @@ export default function AdminQuestionsBankPage() {
     } finally {
       setLoading(false);
     }
-  }, [qSearch, qLevel, qPlatform, qType, page]);
+  }, [qSearch, qLevel, qPlatform, qType, page, searchParams.get('topic')]);
 
   useEffect(() => {
     updateUrl();
@@ -229,22 +291,6 @@ export default function AdminQuestionsBankPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
-            onClick={() => {
-              setQSearch('');
-              setQLevel('');
-              setQPlatform('');
-              setQType('');
-              const params = new URLSearchParams();
-              params.set('page', '1');
-              router.replace(`/admin/questions?${params.toString()}`);
-            }}
-            className="h-9"
-          >
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Clear Filters
-          </Button>
           <Button onClick={() => { resetForms(); setIsCreateOpen(true); }} className="gap-2">
             <Plus className="w-4 h-4" /> Add Question
           </Button>
@@ -305,61 +351,127 @@ export default function AdminQuestionsBankPage() {
             className="w-[180px] h-9 text-sm"
             placeholder={allTopics.length > 0 ? "All Topics" : "Loading..."}
           />
+          
+          {hasActiveFilters() && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={clearAllFilters}
+              className="h-9 text-xs ml-auto"
+            >
+              <X className="w-3 h-3 mr-1" />
+              Clear
+            </Button>
+          )}
         </div>
 
-        <div className="overflow-x-auto flex-1">
+        <ScrollArea className="flex-1">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 hover:bg-muted/50">
-                <TableHead>Subject</TableHead>
-                <TableHead>Metrics</TableHead>
-                <TableHead>Categorization</TableHead>
+              <TableRow className="hover:bg-transparent">
+                <TableHead>Question Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Difficulty</TableHead>
+                <TableHead>Topic</TableHead>
+                <TableHead>Platform</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-[400px] text-center text-muted-foreground">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    Querying bank...
-                  </TableCell>
-                </TableRow>
+                <>
+                  {[...Array(5)].map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-[250px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[60px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
+                    </TableRow>
+                  ))}
+                </>
               ) : questions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-[400px] text-center text-muted-foreground">
-                    No criteria found matching search filters.
+                  <TableCell colSpan={6} className="h-[400px] text-center text-muted-foreground">
+                    No questions found
                   </TableCell>
                 </TableRow>
               ) : (
                 questions.map((q) => (
                   <TableRow key={q.id} className="group hover:bg-muted/30">
                     <TableCell>
-                      <a href={q.question_link} target="_blank" rel="noreferrer" className="font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-2 mb-1">
-                        {q.question_name} <ExternalLink className="w-3.5 h-3.5 opacity-50" />
-                      </a>
-                      <div className="text-xs text-muted-foreground line-clamp-1">{q.question_link}</div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <a 
+                              href={q.question_link} 
+                              target="_blank" 
+                              rel="noreferrer" 
+                              className="font-medium text-foreground hover:text-primary transition-colors hover:underline cursor-pointer"
+                            >
+                              {q.question_name}
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Open in new tab</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1.5 items-start">
-                        <span className="text-xs uppercase bg-muted text-muted-foreground font-semibold px-2 py-0.5 rounded border border-border">{q.platform}</span>
-                        <BadgeByLevel level={q.level} />
-                      </div>
+                      <BadgeByType type={q.type} />
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1 text-xs text-muted-foreground font-medium">
-                        <span className="capitalize">Topic: <span className="text-foreground">{q.topic?.topic_name || `ID:${q.topic_id}`}</span></span>
-                        <span>Designation: {q.type === 'CLASSWORK' ? 'Class Module' : 'Homework Task'}</span>
+                      <BadgeByLevel level={q.level} />
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm text-muted-foreground">
+                        {q.topic?.topic_name || `ID:${q.topic_id}`}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <PlatformIcon platform={q.platform} />
+                        <span className="text-sm">{q.platform}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(q)} className="h-8 w-8 hover:bg-muted text-muted-foreground">
-                          <FolderEdit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => { setSelectedQ(q); setIsDeleteOpen(true); }} className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive text-muted-foreground">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => openEdit(q)} 
+                                className="h-8 w-8 hover:bg-muted"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Edit</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => { setSelectedQ(q); setIsDeleteOpen(true); }} 
+                                className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Delete</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -367,7 +479,7 @@ export default function AdminQuestionsBankPage() {
               )}
             </TableBody>
           </Table>
-        </div>
+        </ScrollArea>
 
         {/* Pagination Footer */}
         <Pagination
