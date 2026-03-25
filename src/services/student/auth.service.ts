@@ -12,7 +12,7 @@ export const studentAuthService = {
     }
 
     try {
-      const response = await api.get('http://localhost:5000/api/students/me');
+      const response = await api.get('/api/students/me');
       console.log("Raw API response:", response);
       console.log("Response data:", response.data);
       return response.data;

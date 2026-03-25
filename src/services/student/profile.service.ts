@@ -2,13 +2,13 @@ import api from '@/lib/api';
 
 export const studentProfileService = {
   getProfile: async () => {
-    const res = await api.get('http://localhost:5000/api/students/profile');
+    const res = await api.get('/api/students/profile');
     return res.data;
   },
   
   getProfileByUsername: async (username: string) => {
     try {
-      const res = await api.get(`http://localhost:5000/api/students/profile/${username}`);
+      const res = await api.get(`/api/students/profile/${username}`);
       return res.data;
     } catch (error: any) {
       console.error('Profile fetch error:', error);
@@ -31,7 +31,7 @@ export const studentProfileService = {
       formData.append('file', file); // Backend middleware expects field name 'file'
       
       
-      const res = await api.post('http://localhost:5000/api/students/profile-image', formData, {
+      const res = await api.post('/api/students/profile-image', formData, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -48,7 +48,7 @@ export const studentProfileService = {
   deleteProfileImage: async () => {
     try {
       
-      const res = await api.delete('http://localhost:5000/api/students/profile-image', {
+      const res = await api.delete('/api/students/profile-image', {
         withCredentials: true
       });
       
@@ -61,7 +61,7 @@ export const studentProfileService = {
 
   updateProfileDetails: async (data: any) => {
     // Assuming a PUT /api/students/profile exists, or we might need to check backend
-    const res = await api.put('http://localhost:5000/api/students/profile', data);
+    const res = await api.put('/api/students/profile', data);
     return res.data;
   }
 };
