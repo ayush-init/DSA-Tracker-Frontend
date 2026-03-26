@@ -7,6 +7,8 @@ import { Button } from '../../shared/components/Button';
 import { Input } from '../../shared/components/Input';
 import { useLocalStorage } from '../../shared/hooks/useLocalStorage';
 
+/* ================= LOGIN FORM ================= */
+
 export function LoginForm() {
   const router = useRouter();
 
@@ -75,7 +77,7 @@ export function LoginForm() {
         </div>
       )}
 
-      {/* EMAIL / USERNAME */}
+      {/* EMAIL */}
       <div className="space-y-2">
         <label className="text-xs font-semibold text-muted-foreground tracking-wide">
           Email or Username
@@ -106,8 +108,7 @@ export function LoginForm() {
               e.preventDefault();
               router.push('/forgot-password');
             }}
-            className="text-primary font-medium text-xs 
-              hover:underline hover:text-primary/80 transition"
+            className="text-primary font-medium text-xs hover:underline hover:text-primary/80 transition"
           >
             Forgot password?
           </button>
@@ -116,7 +117,7 @@ export function LoginForm() {
         <div className="relative">
           <Input
             type={showPassword ? "text" : "password"}
-            placeholder="•••••"
+            placeholder="••••••••"
             value={password}
             onChange={e => setPassword(e.target.value)}
             disabled={loading}
@@ -125,22 +126,13 @@ export function LoginForm() {
               transition-all"
           />
 
-          {/* 👁️ TOGGLE */}
+          {/* 👁️ */}
           <button
             type="button"
             onClick={() => setShowPassword(prev => !prev)}
             className="absolute right-3 top-1/2 -translate-y-1/2 
-              text-muted-foreground hover:text-primary transition"
+              text-muted-foreground hover:text-foreground transition"
             tabIndex={-1}
-            style={{
-              transform: 'translateY(-50%)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--foreground)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--muted-foreground)';
-            }}
           >
             {showPassword ? (
               <EyeOff className="w-4 h-4" />
@@ -157,7 +149,7 @@ export function LoginForm() {
         disabled={loading}
         className="w-full h-11 text-sm font-semibold tracking-wide 
           bg-primary text-primary-foreground 
-          hover:shadow-[0_0_20px_rgba(204,255,0,0.3)] 
+          hover:shadow-[0_0_20px_var(--hover-glow)] 
           transition-all duration-200 
           active:scale-[0.97]"
       >
@@ -172,5 +164,61 @@ export function LoginForm() {
       </Button>
 
     </form>
+  );
+}
+
+/* ================= AUTH SECTION ================= */
+
+export function AuthSection({ GoogleAuthButton }: any) {
+  return (
+    <div className="w-full max-w-md mx-auto">
+
+      {/* LOGO */}
+      <div className="flex flex-col items-center justify-center text-center mb-10">
+
+        <h1
+          className="
+            font-serif italic text-4xl font-bold
+            bg-gradient-to-br from-primary via-primary to-amber-500
+            bg-clip-text text-transparent
+            tracking-tight leading-[1.1]
+            drop-shadow-[0_0_10px_var(--hover-glow)]
+            transition-all duration-300
+          "
+        >
+          BruteForce
+        </h1>
+
+        <p className="mt-2 text-[13.5px] font-medium text-muted-foreground tracking-wide max-w-[260px]">
+          Outwork. Outsolve. Outrank.
+        </p>
+      </div>
+
+      {/* GOOGLE */}
+      <div className="glass rounded-xl p-1 hover-glow">
+        <GoogleAuthButton />
+      </div>
+
+      {/* DIVIDER */}
+      <div className="relative my-8">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-border" />
+        </div>
+
+        <div className="relative flex justify-center">
+          <span className="px-4 py-1.5 text-[10px] uppercase 
+            text-muted-foreground font-semibold tracking-[0.2em]
+            glass-borderless rounded-full border border-border/60">
+            Or continue with
+          </span>
+        </div>
+      </div>
+
+      {/* FORM */}
+      <div className="glass rounded-2xl p-6 shadow-lg">
+        <LoginForm />
+      </div>
+
+    </div>
   );
 }

@@ -10,8 +10,7 @@ export default function LoginPage() {
           className="
     font-serif italic text-4xl font-bold mb-2 shrink-0
 
-    bg-gradient-to-br from-primary via-primary to-amber-500
-    bg-clip-text text-transparent
+    text-logo
 
     tracking-tight
 
