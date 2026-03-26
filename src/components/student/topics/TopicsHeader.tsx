@@ -15,7 +15,7 @@ export function TopicsHeader({ searchQuery, setSearchQuery }: TopicsHeaderProps)
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="font-serif italic text-3xl font-bold text-foreground mb-3">
-            Learning <span className="bg-gradient-to-br from-primary to-amber-600 bg-clip-text text-transparent">Modules</span>
+            Learning <span className="text-primary font-bold">Modules</span>
           </h1>
           <p className="text-[14px] text-muted-foreground max-w-2xl">
             Track your progress across different data structure and algorithm topics. Complete classes and solve questions to master each module.
