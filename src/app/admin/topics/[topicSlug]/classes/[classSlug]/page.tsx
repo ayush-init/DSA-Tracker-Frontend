@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAdminStore } from '@/store/adminStore';
+import api from '@/lib/api';
 import {
    getAdminClassQuestions,
    assignQuestionsToClass,
@@ -33,6 +34,7 @@ import {
    SelectValue,
 } from '@/components/ui/select';
 import { DeleteModal } from '@/components/DeleteModal';
+import { Pagination } from '@/components/Pagination';
 import {
    Table,
    TableBody,
@@ -69,6 +71,10 @@ export default function AdminClassDetailsPage() {
    const [assignedQuestions, setAssignedQuestions] = useState<any[]>([]);
    const [loading, setLoading] = useState(false);
    const [search, setSearch] = useState('');
+   const [assignedPage, setAssignedPage] = useState(1);
+   const [assignedTotalPages, setAssignedTotalPages] = useState(1);
+   const [assignedTotalCount, setAssignedTotalCount] = useState(0);
+   const [limit, setLimit] = useState(25);
 
    // Assign Modal States
    const [isAssignOpen, setIsAssignOpen] = useState(false);
@@ -87,16 +93,22 @@ export default function AdminClassDetailsPage() {
    const [submitting, setSubmitting] = useState(false);
    const [errorMsg, setErrorMsg] = useState('');
 
-   const fetchAssigned = async () => {
+   const fetchAssigned = async (page: number = 1, searchQuery: string = search) => {
       if (!selectedBatch) return;
       setLoading(true);
       try {
-         const data = await getAdminClassQuestions(selectedBatch.slug, topicSlug, classSlug);
-         // Backend returns { message: "...", data: [...] }
+         const params: any = { page, limit };
+         if (searchQuery) params.search = searchQuery;
+
+         const response = await api.get(`/api/admin/${selectedBatch.slug}/topics/${topicSlug}/classes/${classSlug}/questions`, { params });
+         const data = response.data;
+         // Backend returns { message: "...", data: [...], pagination: {...} }
          setAssignedQuestions(data.data || []);
+         setAssignedTotalPages(data.pagination?.totalPages || 1);
+         setAssignedTotalCount(data.pagination?.total || 0);
       } catch (err: any) {
          console.error("Failed to fetch assigned questions", err);
-         // If the current deeply tracked class does not exist in the active batch context, redirect out safely.
+         // If current deeply tracked class does not exist in active batch context, redirect out safely.
          if (err.response?.status === 400 || err.response?.status === 404) {
             router.push('/admin/topics');
          }
@@ -105,9 +117,14 @@ export default function AdminClassDetailsPage() {
       }
    };
 
+   const handleLimitChange = (newLimit: number) => {
+      setLimit(newLimit);
+      setAssignedPage(1); // Reset to first page when limit changes
+   };
+
    useEffect(() => {
-      fetchAssigned();
-   }, [selectedBatch, topicSlug, classSlug]);
+      fetchAssigned(assignedPage, search);
+   }, [selectedBatch, topicSlug, classSlug, assignedPage, search, limit]);
 
    // Modal Bank querying
    const fetchBankQuestions = async () => {
@@ -189,12 +206,7 @@ export default function AdminClassDetailsPage() {
       }
    };
 
-   const filteredAssigned = assignedQuestions.filter(q => {
-      // Account for possible nested vs flat structure based on arbitrary backend mappings.
-      const name = q.question?.question_name || q.question_name || "";
-      return name.toLowerCase().includes(search.toLowerCase());
-   });
-
+  
    if (isLoadingContext) {
       return <Skeletons />;
    }
@@ -239,19 +251,22 @@ export default function AdminClassDetailsPage() {
                   <Input
                      placeholder="Search assigned questions..."
                      value={search}
-                     onChange={(e) => setSearch(e.target.value)}
+                     onChange={(e) => {
+                        setSearch(e.target.value);
+                        setAssignedPage(1); // Reset to page 1 when searching
+                     }}
                      className="pl-9 bg-background focus-visible:ring-1"
                   />
                </div>
                <div className="text-sm text-muted-foreground bg-muted px-3 py-1.5 rounded-md font-medium">
-                  {assignedQuestions.length} Total Assigned
+                  {assignedTotalCount} Total Assigned
                </div>
             </div>
 
-            <div className="overflow-x-auto">
-               <Table>
+            <div className="overflow-x-auto ">
+               <Table >
                   <TableHeader>
-                     <TableRow className="bg-muted/50 hover:bg-muted/50">
+                     <TableRow className="bg-muted/50  hover:bg-muted/50">
                         <TableHead>Question Name</TableHead>
                         <TableHead>Platform</TableHead>
                         <TableHead>Difficulty</TableHead>
@@ -268,14 +283,14 @@ export default function AdminClassDetailsPage() {
                               Loading assignments...
                            </TableCell>
                         </TableRow>
-                     ) : filteredAssigned.length === 0 ? (
+                     ) : assignedQuestions.length === 0 ? (
                         <TableRow>
                            <TableCell colSpan={6} className="h-48 text-center text-muted-foreground">
                               No questions have been attached to this class.
                            </TableCell>
                         </TableRow>
                      ) : (
-                        filteredAssigned.map((qObj) => {
+                        assignedQuestions.map((qObj: any) => {
                            const q = qObj.question || qObj; // Flatten potential nested structure
                            return (
                               <TableRow key={q.id} className="group">
@@ -320,8 +335,22 @@ export default function AdminClassDetailsPage() {
             </div>
          </div>
 
+         {/* PAGINATION FOR ASSIGNED QUESTIONS */}
+         <Pagination
+            currentPage={assignedPage}
+            totalItems={assignedTotalCount}
+            limit={limit}
+            onPageChange={setAssignedPage}
+            onLimitChange={(newLimit: number) => {
+               setLimit(newLimit);
+               setAssignedPage(1);
+            }}
+            showLimitSelector={true}
+            loading={loading}
+         />
+
          {/* ASSIGN QUESTIONS MODAL */}
-     
+
 
          <Dialog open={isAssignOpen} onOpenChange={setIsAssignOpen}>
             <DialogContent className="max-w-[760px] max-h-[90vh] flex flex-col p-0 rounded-2xl border border-border bg-background/95 backdrop-blur-xl">
@@ -418,10 +447,10 @@ export default function AdminClassDetailsPage() {
                               <div
                                  key={q.id}
                                  className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected
-                                       ? "bg-primary/10 border-primary/30"
-                                       : isAssigned
-                                          ? "bg-muted/50 border-border/50 opacity-60 cursor-not-allowed"
-                                          : "bg-card border-border hover:border-primary/40 hover:bg-muted/40"
+                                    ? "bg-primary/10 border-primary/30"
+                                    : isAssigned
+                                       ? "bg-muted/50 border-border/50 opacity-60 cursor-not-allowed"
+                                       : "bg-card border-border hover:border-primary/40 hover:bg-muted/40"
                                     }`}
                                  onClick={() => !isAssigned && toggleSelection(q.id)}
                               >

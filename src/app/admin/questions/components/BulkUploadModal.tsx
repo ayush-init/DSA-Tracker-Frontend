@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Upload, FileText, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { getAllTopics } from '@/services/admin.service';
 
 export default function BulkUploadModal({
   open,
@@ -28,8 +29,46 @@ export default function BulkUploadModal({
   const [uploadError, setUploadError] = useState('');
   const [topics, setTopics] = useState([]);
   const [csvData, setCsvData] = useState([]);
+  const [topicsLoading, setTopicsLoading] = useState(false);
 
-  const [showGuide, setShowGuide] = useState(false); // ✅ FIX
+  const [showGuide, setShowGuide] = useState(false);
+
+  // Fetch topics when modal opens
+  useEffect(() => {
+    const fetchTopics = async () => {
+      if (!open) return;
+      
+      console.log('🔍 Fetching topics...');
+      setTopicsLoading(true);
+      
+      try {
+        console.log('📡 Calling getAllTopics API...');
+        const topicsData = await getAllTopics();
+        console.log('✅ Topics received:', topicsData);
+        
+        // Format topics for Select component
+        const formattedTopics = topicsData.map((topic: any) => ({
+          label: topic.topic_name,
+          value: topic.id.toString()
+        }));
+        
+        console.log('📋 Formatted topics for dropdown:', formattedTopics);
+        setTopics(formattedTopics);
+        
+      } catch (error: any) {
+        console.error('❌ Error fetching topics:', error);
+        console.error('❌ Error details:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        });
+      } finally {
+        setTopicsLoading(false);
+      }
+    };
+
+    fetchTopics();
+  }, [open]);
 
   const handleClose = () => {
     if (!loading) onOpenChange(false);

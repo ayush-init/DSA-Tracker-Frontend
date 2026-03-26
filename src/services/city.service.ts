@@ -9,7 +9,7 @@ export interface City {
 
 export const getAllCities = async (search?: string): Promise<City[]> => {
   const params = search ? { search } : {};
-  const response = await api.get('/api/superadmin/cities', { params });
+  const response = await api.get('/api/cities', { params });
   return response.data; // Backend returns array directly
 };
 

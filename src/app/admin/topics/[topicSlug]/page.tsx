@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAdminStore } from '@/store/adminStore';
+import api from '@/lib/api';
 import {
   getAdminTopicClasses,
   createAdminClass,
@@ -39,6 +40,7 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Pagination } from '@/components/Pagination';
 
 export default function AdminClassesPage() {
   const params = useParams();
@@ -48,6 +50,9 @@ export default function AdminClassesPage() {
   const [classesList, setClassesList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   // Modals
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -69,8 +74,14 @@ export default function AdminClassesPage() {
     if (!selectedBatch) return;
     setLoading(true);
     try {
-      const data = await getAdminTopicClasses(selectedBatch.slug, topicSlug);
-      setClassesList(data);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(search && { search })
+      });
+      const response = await api.get(`/api/admin/${selectedBatch.slug}/topics/${topicSlug}/classes?${params}`);
+      setClassesList(response.data.data || []);
+      setTotalRecords(response.data.pagination?.total || 0);
     } catch (err) {
       console.error("Failed to fetch classes", err);
     } finally {
@@ -79,8 +90,12 @@ export default function AdminClassesPage() {
   };
 
   useEffect(() => {
+    setPage(1); // Reset to page 1 when search changes
+  }, [search]);
+
+  useEffect(() => {
     fetchClasses();
-  }, [selectedBatch, topicSlug]);
+  }, [selectedBatch, topicSlug, page, limit, search]);
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -321,6 +336,20 @@ export default function AdminClassesPage() {
           </Table>
         </div>
       </div>
+
+      {/* PAGINATION */}
+      <Pagination
+        currentPage={page}
+        totalItems={totalRecords}
+        limit={limit}
+        onPageChange={setPage}
+        onLimitChange={(newLimit: number) => {
+          setLimit(newLimit);
+          setPage(1);
+        }}
+        showLimitSelector={true}
+        loading={loading}
+      />
 
       {/* CREATE MODAL */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>

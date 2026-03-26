@@ -548,6 +548,48 @@ export default function PublicProfilePage() {
                 </span>
                 <span className="font-bold text-orange-700 dark:text-orange-400 font-mono text-xl">{streak?.maxStreak || 0}</span>
               </div>
+
+              {/* Current Streak with new logic */}
+              <div className={`flex justify-between items-center p-4 rounded-xl ${
+                (streak?.count === 0 && streak?.hasQuestion === false) 
+                  ? 'bg-orange-500/5 border border-orange-500/10' 
+                  : 'bg-orange-500/10 border border-orange-500/20'
+              }`}>
+                <div className="flex flex-col gap-1">
+                  <span className={`text-[14px] font-medium flex items-center gap-2 ${
+                    (streak?.count === 0 && streak?.hasQuestion === false)
+                      ? 'text-orange-600/60 dark:text-orange-400/60'
+                      : 'text-orange-700 dark:text-orange-400'
+                  }`}>
+                    <Flame className="w-4 h-4" />
+                    Current Streak
+                    {(streak?.count === 0 && streak?.hasQuestion === false) && (
+                      <span className="text-[11px] font-normal text-orange-600/50 dark:text-orange-400/50">
+                        (Frozen)
+                      </span>
+                    )}
+                  </span>
+                  {(streak?.count === 0 && streak?.hasQuestion === false) && (
+                    <span className="text-[11px] text-muted-foreground">
+                      No question uploaded today
+                    </span>
+                  )}
+                </div>
+                <div className="text-right">
+                  <span className={`font-bold font-mono text-xl ${
+                    (streak?.count === 0 && streak?.hasQuestion === false)
+                      ? 'text-orange-600/60 dark:text-orange-400/60'
+                      : 'text-orange-700 dark:text-orange-400'
+                  }`}>
+                    {streak?.currentStreak || 0}
+                  </span>
+                  {streak && streak.count && streak.count > 0 && (
+                    <div className="text-[10px] text-muted-foreground">
+                      {streak.count} submission{streak.count !== 1 ? 's' : ''} today
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 

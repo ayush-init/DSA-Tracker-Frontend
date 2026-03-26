@@ -129,6 +129,8 @@ export interface StreakData {
     maxStreak?: number;
     currentStreak?: number;
     lastSolvedDate?: string;
+    count?: number;
+    hasQuestion?: boolean;
 }
 
 // API Response wrapper types
