@@ -294,7 +294,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null;
 
   return (
-    <div className="flex h-[100vh] bg-background text-foreground overflow-hidden selection:bg-primary/20">
+    <div className="flex h-[100vh] bg-background text-foreground selection:bg-primary/20">
       {/* Mobile Menu Toggle */}
       <button
         onClick={() => setIsMobileSidebarOpen(true)}
