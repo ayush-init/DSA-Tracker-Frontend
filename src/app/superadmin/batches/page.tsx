@@ -142,7 +142,7 @@ export default function BatchesPage() {
         onViewModeChange={setViewMode}
       />
 
-      <div className="glass rounded-xl overflow-hidden border border-border/20">
+      <div className="glass rounded-2xl overflow-hidden border border-border">
         {viewMode === 'table' ? (
           <div className="p-6">
             <BatchTable

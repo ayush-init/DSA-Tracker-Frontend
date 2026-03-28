@@ -137,7 +137,7 @@ export default function AdminsPage() {
         onViewModeChange={setViewMode}
       />
 
-      <div className="glass rounded-xl overflow-hidden border border-border/20">
+      <div className="glass rounded-2xl overflow-hidden border border-border/20">
         {viewMode === 'table' ? (
           <div className="p-6">
             <AdminTable

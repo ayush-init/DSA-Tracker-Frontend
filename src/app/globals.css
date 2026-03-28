@@ -188,9 +188,9 @@
   transition: all 0.2s ease;
 }
 
-.card-premium:hover {
+/* .card-premium:hover {
   box-shadow: 0 0 25px var(--hover-glow);
-} 
+}  */
 .glass-borderless {
   background: var(--glass-bg);
   -webkit-backdrop-filter: blur(16px);
@@ -207,18 +207,18 @@
 }
 
 /* ===== HOVER GLOW ===== */
-  .hover-glow {
+  /* .hover-glow {
     transition: all 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  }
+  } */
 
-  .hover-glow:hover {
+  /* .hover-glow:hover {
     box-shadow: 0 4px 20px var(--hover-glow), 0 8px 30px rgba(204, 255, 0, 0.1);
     transform: translateY(-2px);
-  }
+  } */
 
-  .light .hover-glow:hover {
+  /* .light .hover-glow:hover {
     box-shadow: 0 4px 20px rgba(204, 255, 0, 0.2), 0 8px 30px rgba(204, 255, 0, 0.15);
-  }
+  } */
 
 /* ===== CARD UPGRADE ===== */
 
@@ -429,14 +429,14 @@
 }
 
 /* Enhanced hover states */
-.hover-glow:hover {
-  box-shadow: var(--shadow-lg), 0 0 25px var(--hover-glow);
+ .hover-glow:hover {
+  /* box-shadow: var(--shadow-lg), 0 0 25px var(--hover-glow); */
   transform: translateY(-2px);
 }
 
-.light .hover-glow:hover {
+/* .light .hover-glow:hover {
   box-shadow: var(--shadow-md), 0 0 20px var(--hover-glow);
-}
+}  */
 
 /* Consistent border radius for all interactive elements */
 button,
