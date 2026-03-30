@@ -22,37 +22,37 @@ export const studentAuthService = {
     if (!res) {
       return undefined;
     }
-    showSuccess('LOGIN');
+    showSuccess('Login');
     return res.data;
   },
 
   register: async (data: any) => {
     const res = await api.post('/api/auth/student/register', data);
-    showSuccess('REGISTER');
+    showSuccess('Register');
     return res.data;
   },
 
   logout: async () => {
     const res = await api.post('/api/auth/student/logout');
-    showSuccess('LOGOUT');
+    showSuccess('Logout');
     return res.data;
   },
 
   googleLogin: async (idToken: string) => {
     const res = await api.post('/api/auth/google-login', { idToken });
-    showSuccess('LOGIN');
+    showSuccess('Login');
     return res.data;
   },
 
   forgotPassword: async (email: string) => {
     const res = await api.post('/api/auth/forgot-password', { email });
-    showSuccess('EMAIL_SENT', 'Password reset email sent!');
+    showSuccess('Email Sent', 'Password reset email sent!');
     return res.data;
   },
 
   resetPassword: async (data: any) => {
     const res = await api.post('/api/auth/reset-password', data);
-    showSuccess('PASSWORD_RESET');
+    showSuccess('Password Reset');
     return res.data;
   },
 

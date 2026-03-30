@@ -104,8 +104,9 @@ export function LoginForm() {
       {/* LOG IN BUTTON */}
       <button
         type="submit"
-        disabled={loading}
-        className="w-full h-14 bg-[#CCFF00] hover:bg-[#D9FF33] text-black font-black text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-[0_10px_20px_rgba(204,255,0,0.1)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+        disabled={loading || !validationResult.isValid}
+        className="w-full h-14 bg-[#CCFF00] hover:bg-[#D9FF33] text-black font-black text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-[0_10px_20px_rgba(204,255,0,0.1)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        title={!validationResult.isValid ? validationResult.message : undefined}
       >
         {loading ? (
           <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />

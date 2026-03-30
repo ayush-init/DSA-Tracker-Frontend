@@ -26,8 +26,7 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-loginCard/85 backdrop-blur-xl"
+            className="absolute inset-0 bg-login/85 backdrop-blur-xl"
           />
 
           {/* 🔥 AMBIENT RADIAL GLOW */}
@@ -41,8 +40,8 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
             className="
               relative z-10 w-full max-w-[420px]
-              bg-loginCard border border-foreground/6
-              rounded-[32px] overflow-hidden
+              bg-login border border-foreground/6
+              rounded-2xl overflow-hidden
               shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)]
             "
           >

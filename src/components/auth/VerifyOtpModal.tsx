@@ -57,8 +57,7 @@ function VerifyOtpModalContent({ isOpen, onClose }: VerifyOtpModalProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="absolute inset-0 bg-loginCard/80 backdrop-blur-md"
+        className="absolute inset-0 bg-login/80 backdrop-blur-md"
       />
 
       {/* 🔥 AMBIENT GLOW */}
@@ -72,9 +71,9 @@ function VerifyOtpModalContent({ isOpen, onClose }: VerifyOtpModalProps) {
         transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
         className="
           relative z-10 w-full max-w-[420px]
-          bg-loginCard border border-white/[0.06]
+           border border-white/[0.06]
           rounded-[32px] overflow-hidden
-          shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)]
+          shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] bg-login
         "
       >
         {/* TOP REFLECTION */}
@@ -110,20 +109,6 @@ function VerifyOtpModalContent({ isOpen, onClose }: VerifyOtpModalProps) {
         <div className="px-8 pb-10 pt-4">
           <form id="otp-form" onSubmit={handleVerifyOtpLocal} className="space-y-8">
             
-            {/* ERROR MESSAGE */}
-            <AnimatePresence mode="wait">
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="flex items-center justify-center gap-2 p-3 rounded-xl bg-red-500/5 border border-red-500/20"
-                >
-                  <AlertCircle size={14} className="text-red-400" />
-                  <p className="text-xs text-red-400 font-semibold uppercase tracking-wider">{error}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
 
             {/* 🔥 ENHANCED OTP INPUT GRID */}
             <div className="flex justify-center gap-3">
@@ -208,7 +193,6 @@ function VerifyOtpModalContent({ isOpen, onClose }: VerifyOtpModalProps) {
         </div>
 
         {/* BOTTOM DECORATIVE SCANLINE */}
-        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#CCFF00]/40 to-transparent" />
       </motion.div>
 
       {/* CUSTOM ANIMATION FOR INPUT BOXES */}

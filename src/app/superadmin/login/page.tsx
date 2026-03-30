@@ -104,7 +104,7 @@ export default function SuperAdminLoginPage() {
               password={password}
               onPasswordChange={setPassword}
               disabled={loading}
-              showStrengthIndicator={true}
+              showStrengthIndicator={false}
               showChecklist={false}
               className="space-y-2"
             />

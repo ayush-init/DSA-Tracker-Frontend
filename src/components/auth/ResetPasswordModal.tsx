@@ -56,8 +56,7 @@ function ResetPasswordModalContent({ isOpen, onClose }: ResetPasswordModalProps)
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="absolute inset-0 bg-loginCard/80 backdrop-blur-md"
+        className="absolute inset-0 bg-login/80 backdrop-blur-md"
       />
 
       {/* 🔥 AMBIENT GLOW DECORATION */}
@@ -71,7 +70,7 @@ function ResetPasswordModalContent({ isOpen, onClose }: ResetPasswordModalProps)
         transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
         className="
           relative z-10 w-full max-w-[420px]
-          bg-loginCard border border-foreground/6
+          bg-login border border-foreground/6
           rounded-[28px] overflow-hidden
           shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]
         "
@@ -155,7 +154,7 @@ function ResetPasswordModalContent({ isOpen, onClose }: ResetPasswordModalProps)
                   onChange={(e) => setFpConfirmPassword(e.target.value)}
                   disabled={loading}
                   className="
-                    !pl-11 w-full !h-12 bg-white/[0.03] border-white/10 rounded-xl
+                    !pl-11 w-full h-12! bg-white/[0.03] border-white/10 rounded-xl
                     focus:border-logo/40 focus:ring-4 focus:ring-logo/5
                     transition-all duration-300
                   "

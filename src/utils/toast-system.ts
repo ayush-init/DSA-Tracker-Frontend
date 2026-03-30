@@ -296,9 +296,6 @@ export const handleToastError = (error: any, context?: string) => {
   if (error?.silent || error?.isSilent) {
     return;
   }
-
-  const userMessage = getUserFriendlyMessage(error);
-  glassToast.error(userMessage);
 };
 
 // Success messages
