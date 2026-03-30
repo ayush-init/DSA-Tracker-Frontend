@@ -15,8 +15,8 @@ export function TopicsSection({ topics }: TopicsSectionProps) {
   return (
     <section className="mx-auto max-w-[1200px] w-full px-6 lg:px-10 py-16">
       {/* Section with subtle gradient background */}
-      <div className="glass rounded-2xl p-8 mb-8">
-        <div className="flex items-end justify-between">
+      <div className="glass rounded-2xl border-0 p-5 mb-8">
+       <div className="flex justify-between items-center">
           <div>
             <h2 className="text-[18px] sm:text-2xl font-bold text-foreground mb-1.5 font-serif italic">
               Your Learning Path

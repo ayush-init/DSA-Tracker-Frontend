@@ -16,7 +16,7 @@ import PodiumSection from "@/components/leaderboard/components/PodiumSection";
 export default function StudentLeaderboardPage() {
   const [lType, setLType] = useState('all');
   const [lCity, setLCity] = useState('all');
-  const [lYear, setLYear] = useState<number | null>(null);
+  const [lYear, setLYear] = useState<number | null>(2024);
   const [lSearch, setLSearch] = useState('');
 
   // Get current student data to set default city and year
@@ -106,71 +106,80 @@ export default function StudentLeaderboardPage() {
       <YourRank yourRank={data?.yourRank} />
       <div className="max-w-6xl mx-auto px-8 py-2">
 
-      <div className="glass rounded-2xl px-5 py-4 mb-6">
-  <div className="flex items-center justify-between">
+        <div className="glass rounded-2xl px-5 py-4 mb-6">
+          <div className="flex items-center justify-between">
 
-    {/* Left */}
-    <div className="flex flex-col gap-1">
+            {/* Left */}
+            <div className="flex flex-col gap-1">
 
-      <div className="flex items-center gap-2">
-        <Trophy className="w-5 h-5 text-primary" />
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-primary" />
 
-        <h2 className="text-2xl font-semibold text-foreground tracking-tight">
-          Student Leaderboard
-        </h2>
+                <h2 className="text-2xl font-semibold text-foreground tracking-tight">
+                  Student Leaderboard
+                </h2>
 
-        <EvaluationModal />
-      </div>
+                <EvaluationModal />
+              </div>
 
-      <p className="text-xs text-muted-foreground bg-muted/40 px-2.5 py-0.5 
+              <p className="text-xs text-muted-foreground bg-muted/40 px-2.5 py-0.5 
                     rounded-full border border-border/40 w-fit">
-        Top 10 Students {lCity !== 'all' ? `in ${lCity}` : 'Globally'} {lYear ? `- ${lYear}` : ''}
-      </p>
+                Top 10 Students {lCity !== 'all' ? `in ${lCity}` : 'Globally'} {lYear ? `- ${lYear}` : ''}
+              </p>
 
-    </div>
+            </div>
 
-    {/* Right */}
-    <div className="flex items-center">
-      <TimerLeaderboard lastUpdated={data?.last_calculated} />
-    </div>
+            {/* Right */}
+            <div className="flex items-center">
+              <TimerLeaderboard lastUpdated={data?.last_calculated} />
+            </div>
 
-  </div>
-</div>
+          </div>
+        </div>
 
 
+        <FilterBar
+          lSearch={lSearch}
+          setLSearch={setLSearch}
+          lType={lType}
+          setLType={setLType}
+          typeOptionsObj={[
+            { value: 'all', label: 'All Time' },
+            { value: 'weekly', label: 'Weekly' },
+            { value: 'monthly', label: 'Monthly' }
+          ]}
+          lCity={lCity}
+          setLCity={setLCity}
+          cityOptionsObj={[
+            { value: 'all', label: 'All Cities' },
+            ...(isLoading ? [
+              { value: 'loading', label: 'Loading...' }
+            ] : []),
+            ...(data?.available_cities?.map((city: any) => ({
+              value: city.city_name,
+              label: city.city_name
+            })) || [])
+          ]}
+          setLYear={setLYear}
+          lYear={lYear}
+          yearOptionsObj={[
+            { value: '2024', label: '2024' },
+            { value: '2023', label: '2023' },
+            ...(isLoading ? [] : yearOptions.filter((y: number) => y !== 2024 && y !== 2023).map((y: number) => ({
+              value: y.toString(),
+              label: y.toString()
+            })))
+          ]}
+          allYears={[2024, 2023, ...(isLoading ? [] : yearOptions.filter((y: number) => y !== 2024 && y !== 2023))] }
+          isLoading={isLoading}
+          mode="student"
+        />
         <PodiumSection
           top3={data?.top10?.slice(0, 3) || []}
           loading={isLoading}
           error={error?.message}
         />
         <div className="flex flex-col space-y-6">
-          <FilterBar
-            lSearch={lSearch}
-            setLSearch={setLSearch}
-            lType={lType}
-            setLType={setLType}
-            typeOptionsObj={[
-              { value: 'all', label: 'All Time' },
-              { value: 'weekly', label: 'Weekly' },
-              { value: 'monthly', label: 'Monthly' }
-            ]}
-            lCity={lCity}
-            setLCity={setLCity}
-            cityOptionsObj={[
-              ...(data?.available_cities?.map((city: any) => ({
-                value: city.city_name,
-                label: city.city_name
-              })) || [])
-            ]}
-            setLYear={setLYear}
-            lYear={lYear}
-            yearOptionsObj={yearOptions.map((y: number) => ({
-              value: y.toString(),
-              label: y.toString()
-            }))}
-            allYears={yearOptions}
-            mode="student"
-          />
 
           <LeaderboardTable
             data={{ leaderboard: data?.top10 || [], total: data?.top10?.length || 0 }}

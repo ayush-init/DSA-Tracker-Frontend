@@ -16,6 +16,7 @@ import { ProgressBar } from '@/components/student/onboarding/components/Progress
 import { useOnboardingModal } from '@/components/student/onboarding/hooks/useOnboardingModal';
 import { HeroSection } from '@/components/student/home/HeroSection';
 import { TopicsSection } from '@/components/student/home/TopicsSection';
+import { TopicsSectionShimmer } from '@/components/student/home/TopicsSectionShimmer';
 import { handleToastError } from "@/utils/toast-system";
       import {
   Dialog,
@@ -166,25 +167,21 @@ export default function StudentHomePage() {
     return () => window.removeEventListener('profileUpdated', refreshUserData);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center p-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   // Get top 4 topics for the showcase
   const displayTopics = topics.slice(0, 8);
 
   return (
     <>
       <div className="flex flex-col w-full pb-12">
-        {/* HERO SECTION */}
+        {/* HERO SECTION - Always render immediately */}
         <HeroSection />
         
-        {/* TOPICS SECTION */}
-        <TopicsSection topics={topics} />
+        {/* TOPICS SECTION - Show loading state only for topics */}
+        {loading ? (
+          <TopicsSectionShimmer />
+        ) : (
+          <TopicsSection topics={topics} />
+        )}
       </div>
 
 

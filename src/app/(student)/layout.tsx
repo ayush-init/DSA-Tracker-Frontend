@@ -71,22 +71,6 @@ export default function StudentLayout({
     checkProfile();
   }, [router, pathname]);
 
-  const handleSaveProfile = async () => {
-    setSaving(true);
-    try {
-      // Note: We'll implement profile update later if needed
-      // For now, just close the modal and update local state
-      setShowProfileModal(false);
-      // Optimistically update local profile state
-      setProfile((prev: any) => ({ ...prev, leetcode: leetcodeId, gfg: gfgId }));
-    } catch (e) {
-      handleToastError(e);
-      console.error("Failed to update profile", e);
-      alert("Failed to update profile. Please try again.");
-    } finally {
-      setSaving(false);
-    }
-  };
 
   if (loading) {
     return (

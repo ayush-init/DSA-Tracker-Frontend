@@ -55,10 +55,6 @@ export default function TopicsPage() {
   const totalItems = filteredAndSortedTopics.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  if (loading) {
-    return <TopicsLoading />;
-  }
-
   return (
     <div className="flex flex-col mx-auto max-w-[1100px] w-full pb-12 px-7 sm:px-10 lg:px-12 pt-8">
       <TopicsHeader
@@ -66,20 +62,26 @@ export default function TopicsPage() {
         setSearchQuery={setSearchQuery}
       />
       
-      <TopicsGrid
-        topics={paginatedTopics}
-        searchQuery={searchQuery}
-      />
+      {loading ? (
+        <TopicsLoading />
+      ) : (
+        <>
+          <TopicsGrid
+            topics={paginatedTopics}
+            searchQuery={searchQuery}
+          />
 
-      {!loading && totalItems > 0 && (
-        <Pagination 
-          currentPage={page}
-          totalItems={totalItems}
-          limit={itemsPerPage || 10}
-          onPageChange={setPage}
-          onLimitChange={setItemsPerPage}
-          showLimitSelector={true}
-        />
+          {totalItems > 0 && (
+            <Pagination 
+              currentPage={page}
+              totalItems={totalItems}
+              limit={itemsPerPage || 10}
+              onPageChange={setPage}
+              onLimitChange={setItemsPerPage}
+              showLimitSelector={true}
+            />
+          )}
+        </>
       )}
       
     </div>
