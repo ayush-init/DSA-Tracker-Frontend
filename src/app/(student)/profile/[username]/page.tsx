@@ -18,6 +18,7 @@ import { EditUsernameModal } from '@/components/student/profile/EditUsernameModa
 
 import { ProfilePageShimmer } from '@/components/student/profile/shimmers';
 import { ProfileHeader } from '@/components/student/profile/ProfileHeader';
+import { ProfileNotFound } from '@/components/student/profile/ProfileNotFound';
 import { OverviewStats } from '@/components/student/profile/OverviewStats';
 import { ProfileInfo } from '@/components/student/profile/ProfileInfo';
 import { SocialLinks } from '@/components/student/profile/SocialLinks';
@@ -342,6 +343,10 @@ export default function PublicProfilePage() {
     setShowDeleteConfirm(false);
   };
 
+  if (loading) {
+    return <ProfilePageShimmer />;
+  }
+
   if (profileError) {
     return (
       <div className="text-center py-20">
@@ -360,11 +365,7 @@ export default function PublicProfilePage() {
   }
 
   if (!profileData || !profileData.student) {
-    return (
-      <div className="text-center py-20 text-muted-foreground">
-        <h2>Profile not found.</h2>
-      </div>
-    );
+    return <ProfileNotFound username={username || undefined} error={profileError || undefined} />;
   }
 
   const { student, codingStats, streak, leaderboard, recentActivity, heatmap } = profileData || {

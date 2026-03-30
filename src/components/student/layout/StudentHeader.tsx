@@ -103,7 +103,10 @@ export default function StudentHeader() {
             className="font-sans italic text-xl font-bold text-logo transition-all duration-300 group-hover:shadow-[0_0_20px_var(--hover-glow)]"
             style={{ fontSize: 'var(--text-lg)', letterSpacing: '-0.025em' }}
           >
-            BruteForce
+            <span className="text-2xl md:text-2xl font-bold leading-[1.05] tracking-tight">
+              <span className="text-foreground">Brute</span>
+              <span className="text-[var(--accent-primary)] italic">Force</span>
+            </span>
           </h1>
         </Link>
 

@@ -2,10 +2,14 @@
 
 import React from "react";
 import { PodiumCard } from "./PodiumCard";
+import { PodiumShimmer } from "./PodiumShimmer";
 
-
-export default function PodiumSection({ top3 }: any) {
-  if (!top3) return null;
+export default function PodiumSection({ top3, loading }: any) {
+  if (loading) {
+    return <PodiumShimmer />;
+  }
+  
+  if (!top3 || top3.length === 0) return null;
 
   return (
     <div className="relative flex justify-center items-center gap-6 md:gap-12 pt-6 pb-8">

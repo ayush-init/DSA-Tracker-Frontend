@@ -137,8 +137,32 @@ export function RecentQuestionsSidebar() {
                 <ScrollArea className="h-[calc(100vh-80px)] px-4 py-4">
 
                   {loading ? (
-                    <div className="flex items-center justify-center p-10">
-                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    <div className="space-y-4">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Card
+                          key={i}
+                          className="group glass rounded-2xl animate-in fade-in slide-in-from-right-2"
+                          style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'both' }}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex justify-between items-center gap-4">
+                              {/* Left */}
+                              <div className="flex-1 min-w-0">
+                                <div className="h-4 w-full bg-muted/50 rounded mb-2 animate-pulse" />
+                                <div className="h-4 w-3/4 bg-muted/40 rounded animate-pulse" />
+                                
+                                <div className="flex items-center gap-2 mt-3">
+                                  <div className="h-5 w-12 bg-muted/40 rounded-full animate-pulse" />
+                                  <div className="h-3 w-16 bg-muted/30 rounded animate-pulse" />
+                                </div>
+                              </div>
+
+                              {/* Right */}
+                              <div className="h-8 w-16 bg-muted/50 rounded-lg animate-pulse" />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
                   ) : error ? (
                     <div className="p-6 text-center">
@@ -165,7 +189,7 @@ export function RecentQuestionsSidebar() {
                       {questions.map((question, index) => (
                         <Card
                           key={question.question_id}
-                          className="group glass border border-white/5 hover:border-primary/30 hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.01]"
+                          className="group glass rounded-2xl hover:border-primary/30 hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.01]"
                           style={{
                             animationDelay: `${index * 60}ms`,
                             animation: "slideIn 0.35s ease forwards",

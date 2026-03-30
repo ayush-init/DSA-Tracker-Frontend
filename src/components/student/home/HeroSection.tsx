@@ -20,6 +20,8 @@ export function HeroSection() {
       <div className="w-full max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
 
         {/* 📝 LEFT SIDE (TEXT) */}
+
+
         <div className="flex flex-col justify-center items-start text-left gap-3 max-w-2xl">
 
           {/* TAG */}
@@ -76,7 +78,7 @@ export function HeroSection() {
         </div>
 
         {/* 🎯 RIGHT SIDE */}
-        <div className="hidden lg:flex items-center justify-center relative w-[400px] h-[400px]">
+        <div className="hidden lg:flex items-center justify-center relative w-full h-full">
           <BruteForceTree />
         </div>
 

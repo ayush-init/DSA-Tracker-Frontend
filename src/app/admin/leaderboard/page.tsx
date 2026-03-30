@@ -240,12 +240,6 @@ export default function AdminLeaderboardPage() {
         />
       </div>
 
-      <PodiumSection
-        top3={leaderboardData?.data?.leaderboard?.slice(0, 3) || []}
-        loading={leaderboardLoading}
-        error={leaderboardError}
-      />
-
       <FilterBar
         lSearch={lSearch}
         setLSearch={setLSearch}
@@ -261,6 +255,12 @@ export default function AdminLeaderboardPage() {
         allYears={allYears}
         mode="admin"
       />
+      <PodiumSection
+        top3={leaderboardData?.data?.leaderboard?.slice(0, 3) || []}
+        loading={leaderboardLoading}
+        error={leaderboardError}
+      />
+
 
       <LeaderboardTable
         data={leaderboardData?.data}
