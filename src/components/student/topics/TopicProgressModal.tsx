@@ -64,7 +64,6 @@ export default function TopicProgressModal({
       const res = await api.get(`/api/topicprogress/${username}`);
       setData(res.data);
     } catch (err) {
-      handleError(err);
       console.error(err);
     } finally {
       setLoading(false);
@@ -129,7 +128,7 @@ export default function TopicProgressModal({
       />
 
       {/* MODAL */}
-      <div className="relative w-[95vw] max-w-[1000px] h-[85vh] bg-background rounded-2xl shadow-xl flex flex-col overflow-hidden">
+      <div className="relative w-[95vw] no-scrollbar max-w-[1000px] h-[85vh] bg-background rounded-2xl shadow-xl flex flex-col overflow-hidden">
 
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">

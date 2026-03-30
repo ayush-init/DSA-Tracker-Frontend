@@ -11,7 +11,6 @@ interface ProblemSolvingStatsProps {
   };
 }
 
-// 🔥 SEGMENTED GAUGE
 function SegmentedGauge({
   value = 0,
   total = 100,

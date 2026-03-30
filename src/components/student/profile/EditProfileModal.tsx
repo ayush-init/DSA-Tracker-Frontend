@@ -4,6 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { X, Camera, Trash2, Github, Linkedin, Lock } from 'lucide-react';
 import { ProfileEditForm, StudentProfile } from '@/types/student';
+import { toast } from '@/utils/toast';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -37,6 +38,17 @@ export function EditProfileModal({
   imageRemoved,
 }: EditProfileModalProps) {
   if (!isOpen) return null;
+
+  const handleSaveWithToast = async () => {
+    try {
+      await handleSaveProfile();
+      toast.success('Profile updated successfully!');
+      onClose();
+    } catch (error) {
+      toast.error('Failed to update profile');
+      console.error('Profile update error:', error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -159,7 +171,7 @@ export function EditProfileModal({
 
           {/* Actions */}
           <div className="flex gap-2">
-            <Button onClick={handleSaveProfile} disabled={savingProfile} className="flex-1">
+            <Button onClick={handleSaveWithToast} disabled={savingProfile} className="flex-1">
               {savingProfile ? 'Saving…' : 'Save Changes'}
             </Button>
             <Button onClick={onClose} variant="outline" className="flex-1">

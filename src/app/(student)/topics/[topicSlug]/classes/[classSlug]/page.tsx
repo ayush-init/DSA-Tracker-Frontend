@@ -6,7 +6,6 @@ import { studentClassService } from '@/services/student/class.service';
 import { QuestionRow } from '@/components/student/questions/QuestionRow';
 import { ProgressBar } from '@/components/student/shared/ProgressBar';
 import Link from 'next/link';
-import { Badge } from '@/components/student/shared/Badge';
 import { Calendar, Clock, FileText } from 'lucide-react';
 import { ClassBackNav } from '@/components/student/classes/ClassBackNav';
 import { ClassHeader } from '@/components/student/classes/ClassHeader';
@@ -14,7 +13,7 @@ import { ClassQuestions } from '@/components/student/classes/ClassQuestions';
 import { ClassLoading } from '@/components/student/classes/ClassLoading';
 import { Pagination } from '@/components/Pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { handleError } from "@/utils/handleError";
+import { handleToastError } from "@/utils/toast-system";
 
 export default function ClassDetailsPage() {
   const { topicSlug, classSlug } = useParams() as { topicSlug: string; classSlug: string };
@@ -40,7 +39,7 @@ export default function ClassDetailsPage() {
         const data = await studentClassService.getClassDetailsWithPagination(topicSlug, classSlug, queryParams.toString());
         setClassData(data);
       } catch (e) {
-        handleError(e);
+        handleToastError(e);
         console.error("Class detail fetch error", e);
         router.push(`/topics/${topicSlug}`);
       } finally {
