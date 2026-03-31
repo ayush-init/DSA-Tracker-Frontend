@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { toast, ToasterProps } from 'sonner';
-import { 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
-  Info, 
+import {
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Info,
   Loader2,
   X
 } from 'lucide-react';
@@ -89,14 +89,14 @@ const PremiumToastRenderer = ({ toast: toastObj, title, description, icon, id }:
       React.createElement('div', { className: `premium-icon-container ${getIconGlow()}` },
         getIcon()
       ),
-      
+
       // Content
       React.createElement('div', { className: "premium-toast-content" },
         React.createElement('div', { className: `premium-toast-title ${getTitleColor()}` },
           title || description
         )
       ),
-      
+
       // Close Button
       !isLoading && React.createElement('button', {
         onClick: () => toast.dismiss(id),
@@ -104,17 +104,17 @@ const PremiumToastRenderer = ({ toast: toastObj, title, description, icon, id }:
       },
         React.createElement(X, { className: "w-4 h-4" })
       ),
-      
+
       // Progress Bar
-      !isLoading && duration && duration !== Infinity && 
-        React.createElement('div', { className: "premium-progress-container" },
-          React.createElement('div', {
-            className: `premium-progress-bar ${getProgressBarColor()}`,
-            style: {
-              animation: `shrink ${duration}ms linear forwards`,
-            }
-          })
-        )
+      !isLoading && duration && duration !== Infinity &&
+      React.createElement('div', { className: "premium-progress-container" },
+        React.createElement('div', {
+          className: `premium-progress-bar ${getProgressBarColor()}`,
+          style: {
+            animation: `shrink ${duration}ms linear forwards`,
+          }
+        })
+      )
     )
   );
 };
@@ -122,53 +122,53 @@ const PremiumToastRenderer = ({ toast: toastObj, title, description, icon, id }:
 // Premium SaaS toast variants
 export const glassToast = {
   success: (message: string, options?: any) => {
-    return toast.custom((id) => 
+    return toast.custom((id) =>
       React.createElement(PremiumToastRenderer, {
         toast: { type: 'success', duration: 4000, ...options },
         title: message,
         id: id
       })
-    , { duration: 4000, ...options });
+      , { duration: 4000, ...options });
   },
 
   error: (message: string, options?: any) => {
-    return toast.custom((id) => 
+    return toast.custom((id) =>
       React.createElement(PremiumToastRenderer, {
         toast: { type: 'error', duration: 6000, ...options },
         title: message,
         id: id
       })
-    , { duration: 6000, ...options });
+      , { duration: 6000, ...options });
   },
 
   warning: (message: string, options?: any) => {
-    return toast.custom((id) => 
+    return toast.custom((id) =>
       React.createElement(PremiumToastRenderer, {
         toast: { type: 'warning', duration: 5000, ...options },
         title: message,
         id: id
       })
-    , { duration: 5000, ...options });
+      , { duration: 5000, ...options });
   },
 
   info: (message: string, options?: any) => {
-    return toast.custom((id) => 
+    return toast.custom((id) =>
       React.createElement(PremiumToastRenderer, {
         toast: { type: 'info', duration: 4000, ...options },
         title: message,
         id: id
       })
-    , { duration: 4000, ...options });
+      , { duration: 4000, ...options });
   },
 
   loading: (message: string, options?: any) => {
-    return toast.custom((id) => 
+    return toast.custom((id) =>
       React.createElement(PremiumToastRenderer, {
         toast: { type: 'loading', duration: Infinity, ...options },
         title: message,
         id: id
       })
-    , { duration: Infinity, ...options });
+      , { duration: Infinity, ...options });
   },
 
   // Promise-based toast for async operations
@@ -204,57 +204,66 @@ export const userFriendlyMessages = {
   INVALID_CREDENTIALS: 'Invalid email or password. Please try again.',
   TOKEN_EXPIRED: 'Your session has expired. Please log in again.',
   ACCESS_DENIED: 'You do not have permission to perform this action.',
-  
+
   // User/Student errors
   USER_NOT_FOUND: 'User not found.',
   USER_EXISTS: 'An account with this email already exists.',
   STUDENT_NOT_FOUND: 'Student not found.',
   STUDENT_EXISTS: 'This student already exists.',
   USERNAME_TAKEN: 'This username is already taken.',
-  
+
   // Validation errors
   VALIDATION_ERROR: 'Please check your input and try again.',
   INVALID_INPUT: 'Invalid information provided.',
   REQUIRED_FIELD: 'This field is required.',
   INVALID_EMAIL: 'Please enter a valid email address.',
   INVALID_PASSWORD: 'Password does not meet requirements.',
-  
+
   // Resource errors
   NOT_FOUND_ERROR: 'Resource not found.',
   TOPIC_NOT_FOUND: 'Topic not found.',
   CLASS_NOT_FOUND: 'Class not found.',
   QUESTION_NOT_FOUND: 'Question not found.',
   BATCH_NOT_FOUND: 'Batch not found.',
-  
+
   // Database errors
   DATABASE_ERROR: 'Database operation failed. Please try again.',
   DUPLICATE_ENTRY: 'This record already exists.',
-  
+
   // Network/Server errors
   NETWORK_ERROR: 'Network error. Please check your connection.',
   SERVER_ERROR: 'Something went wrong. Please try again.',
   INTERNAL_ERROR: 'Internal server error. Please try again.',
   SERVICE_UNAVAILABLE: 'Service temporarily unavailable. Please try again later.',
-  
+
   // File/Upload errors
   FILE_TOO_LARGE: 'File size exceeds the limit.',
   INVALID_FILE_TYPE: 'Invalid file type.',
   UPLOAD_FAILED: 'File upload failed.',
-  
+
   // Rate limiting
   RATE_LIMIT_EXCEEDED: 'Too many requests. Please wait and try again.',
-  
+
   // Authorization errors
   UNAUTHORIZED: 'You are not authorized to perform this action.',
   FORBIDDEN: 'Access denied.',
-  
+
   // Generic fallback
   ERROR: 'Something went wrong. Please try again.',
+
+  // Student Profile
+  STUDENT_PROFILE_NOT_FOUND: "Student not found"
 };
 
 // Helper function to get user-friendly message
 export const getUserFriendlyMessage = (error: any): string => {
   // First check if we have a backend error code
+  console.log('Error structure:', {
+    status: error?.response?.status,
+    data: error?.response?.data,
+    message: error?.response?.data?.message,
+    error: error?.response?.data?.error
+  });
   const errorCode = error?.response?.data?.code || error?.code;
   if (errorCode && userFriendlyMessages[errorCode as keyof typeof userFriendlyMessages]) {
     return userFriendlyMessages[errorCode as keyof typeof userFriendlyMessages];
@@ -270,6 +279,12 @@ export const getUserFriendlyMessage = (error: any): string => {
     case 403:
       return userFriendlyMessages.FORBIDDEN;
     case 404:
+      const errorMessage = error?.response?.data?.message;
+      if (errorMessage === "Student not found" ||
+        errorMessage?.includes("Student not found") ||
+        errorMessage?.includes("not found")) {
+        return userFriendlyMessages.STUDENT_PROFILE_NOT_FOUND;
+      }
       return userFriendlyMessages.NOT_FOUND_ERROR;
     case 429:
       return userFriendlyMessages.RATE_LIMIT_EXCEEDED;
@@ -292,10 +307,10 @@ export const getUserFriendlyMessage = (error: any): string => {
 
 // Enhanced error handler with user-friendly messages
 export const handleToastError = (error: any, context?: string) => {
-  // Don't show toast for silent errors
-  if (error?.silent || error?.isSilent) {
-    return;
-  }
+  if (error?.silent || error?.isSilent) return;
+
+  const message = getUserFriendlyMessage(error);
+  glassToast.error(message);
 };
 
 // Success messages

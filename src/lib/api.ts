@@ -113,6 +113,10 @@ api.interceptors.response.use(
       }
     }
 
+    // Check for profile not found error BEFORE normalization to avoid duplicate toasts
+    const isProfileNotFoundError = error.response?.status === 404 && 
+      error.response?.data?.message === "Student not found";
+
     // Normalize error message based on our new backend API structure
     if (error.response?.data) {
       const errObj = error.response.data;
@@ -123,8 +127,8 @@ api.interceptors.response.use(
       }
     }
 
-    // Handle ALL errors with toast system (except silent errors)
-    if (!error.silent && !error.isSilent) {
+    // Handle ALL errors with toast system (except silent errors and 404 profile errors)
+    if (!error.silent && !error.isSilent && !isProfileNotFoundError) {
       handleToastError(error);
     }
 

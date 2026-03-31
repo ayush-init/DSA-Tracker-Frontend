@@ -26,7 +26,7 @@ import { ProblemSolvingStats } from '@/components/student/profile/ProblemSolving
 import { ActivityHeatmap } from '@/components/student/profile/ActivityHeatmap';
 import { RecentActivity } from '@/components/student/profile/RecentActivity';
 import TopicProgressModal from '@/components/student/topics/TopicProgressModal';
-import { handleToastError, showSuccess, showDeleteSuccess } from '@/utils/toast-system';
+import { handleToastError, showSuccess, showDeleteSuccess, glassToast } from '@/utils/toast-system';
 import { toast } from '@/utils/toast';
 
 export default function PublicProfilePage() {
@@ -72,7 +72,7 @@ export default function PublicProfilePage() {
     const initializeProfile = async () => {
       // Always fetch profile data first
       await fetchProfileByUsername();
-      
+
       // Only try to fetch current user if we have a valid student token
       if (localStorage.getItem('accessToken') || document.cookie.split('; ').find(row => row.startsWith('accessToken='))) {
         await fetchCurrentUser().catch(() => {
@@ -105,10 +105,11 @@ export default function PublicProfilePage() {
 
     } catch (error: unknown) {
       handleToastError(error);
-      const apiError = error as ApiError;
-      if (apiError?.response?.status === 403) {
-        setCurrentUser(null);
-        return;
+      if (error instanceof Error) {
+        if (error.message === "Access denied. Students only.") {
+          setCurrentUser(null);
+          return;
+        }
       }
     } finally {
       setAuthChecked(true);
@@ -141,10 +142,23 @@ export default function PublicProfilePage() {
       setImagePreview(null);
       setImageRemoved(false);
     } catch (err: unknown) {
-      handleToastError(err);
       const apiError = err as ApiError;
       const userError = ErrorHandler.handle(apiError, 'fetchProfileByUsername');
-      setProfileError(userError.message);
+
+      // Check if it's a student not found error
+      const isStudentNotFoundError =
+        apiError?.response?.status === 404 ||           // HTTP status
+        (err as any)?.code === 'STUDENT_PROFILE_NOT_FOUND' || // Custom error code from service
+        userError.message === "Student not found";       // Fallback message
+
+      // Show toast for student not found using the user-friendly message
+      // if (isStudentNotFoundError) {
+      //   glassToast.error(userError.message); // Show the corrected "Student not found" message
+      // } else {
+      //   handleToastError(err); // Use regular error handling for other errors
+      // }
+
+      // setProfileError(userError.message);
     } finally {
       setLoading(false);
     }
@@ -178,7 +192,7 @@ export default function PublicProfilePage() {
       setImageRemoved(false); // Reset removed state if user selects new image
     };
     reader.readAsDataURL(file);
-    
+
     // Clear file input
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -220,23 +234,23 @@ export default function PublicProfilePage() {
   const handleSaveProfile = async () => {
     try {
       setSavingProfile(true);
-      
+
       // Check what needs to be updated
       const needsImageUpload = selectedImage !== null;
       const needsImageDelete = imageRemoved;
-      const needsProfileUpdate = 
-        editForm.github !== originalEditForm.github || 
+      const needsProfileUpdate =
+        editForm.github !== originalEditForm.github ||
         editForm.linkedin !== originalEditForm.linkedin;
 
       // Make API calls only for what changed
       if (needsImageUpload) {
         await studentProfileService.updateProfileImage(selectedImage);
       }
-      
+
       if (needsImageDelete) {
         await studentProfileService.deleteProfileImage();
       }
-      
+
       if (needsProfileUpdate) {
         await studentProfileService.updateProfileDetails({
           github: editForm.github,
@@ -247,20 +261,20 @@ export default function PublicProfilePage() {
       // Refresh profile data and close modal
       await fetchProfileByUsername();
       setShowEditModal(false);
-      
+
       // Trigger StudentHeader refresh
       window.dispatchEvent(new CustomEvent('profileUpdated'));
-      
+
       // Show success message based on what was updated
       const updates = [];
       if (needsImageUpload) updates.push('Profile image');
       if (needsImageDelete) updates.push('Profile image removed');
       if (needsProfileUpdate) updates.push('Profile details');
-      
+
       if (updates.length > 0) {
         showSuccess(`${updates.join(', ')} updated successfully!`);
       }
-      
+
     } catch (error) {
       handleToastError(error);
       ErrorHandler.showAlert(error, 'handleSaveProfile');
@@ -279,7 +293,7 @@ export default function PublicProfilePage() {
       const localStorageToken = localStorage.getItem('accessToken');
       const cookieToken = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
       const token = localStorageToken || cookieToken;
-      
+
       if (!token) {
         toast.error('Please log in to update your username.');
         setTimeout(() => {
@@ -347,7 +361,8 @@ export default function PublicProfilePage() {
     return <ProfilePageShimmer />;
   }
 
-  if (profileError) {
+  // Only show generic error page for non-student-not-found errors
+  if (profileError && !profileError.includes("Student not found")) {
     return (
       <div className="text-center py-20">
         <div className="max-w-md mx-auto">
@@ -369,13 +384,13 @@ export default function PublicProfilePage() {
   }
 
   const { student, codingStats, streak, leaderboard, recentActivity, heatmap } = profileData || {
-  student: {},
-  codingStats: {},
-  streak: {},
-  leaderboard: {},
-  recentActivity: [],
-  heatmap: []
-};
+    student: {},
+    codingStats: {},
+    streak: {},
+    leaderboard: {},
+    recentActivity: [],
+    heatmap: []
+  };
 
   return (
     <div className="w-full max-w-[1200px] mx-auto pb-16 mt-3">

@@ -50,6 +50,15 @@ export class ErrorHandler {
         };
 
       case 404:
+        // Check for specific student not found message
+        const errorMessage = data?.message || error?.response?.data?.message;
+        if (errorMessage === "Student not found" ||
+          errorMessage?.includes("Student not found")) {
+          return {
+            message: 'Student not found',
+            type: 'error'
+          };
+        }
         return {
           message: 'The requested resource was not found.',
           type: 'error'
