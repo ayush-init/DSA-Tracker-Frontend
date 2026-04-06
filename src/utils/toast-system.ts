@@ -1,34 +1,13 @@
 "use client";
 
 import React from 'react';
-import { toast, ToasterProps } from 'sonner';
+import { toast } from 'sonner';
 import {
   CheckCircle,
   XCircle,
   Loader2,
   X
 } from 'lucide-react';
-
-// Premium SaaS toast configuration
-export const toastConfig: ToasterProps = {
-  position: 'top-right',
-  theme: 'system',
-  richColors: false,
-  closeButton: false,
-  duration: 2000,
-  className: 'premium-saas-toast',
-  toastOptions: {
-    classNames: {
-      toast: 'premium-saas-toast',
-      icon: 'premium-toast-icon',
-      title: 'premium-toast-title',
-      description: 'premium-toast-description',
-      actionButton: 'premium-toast-action',
-      cancelButton: 'premium-toast-cancel',
-      closeButton: 'premium-toast-close',
-    },
-  },
-};
 
 // Custom premium toast renderer
 const PremiumToastRenderer = ({ toast: toastObj, title, description, icon, id }: any) => {
@@ -38,69 +17,65 @@ const PremiumToastRenderer = ({ toast: toastObj, title, description, icon, id }:
 
   const getIcon = () => {
     if (isLoading) return React.createElement(Loader2, { className: "w-5 h-5 animate-spin text-blue-400" });
-    if (isSuccess) return React.createElement(CheckCircle, { className: "w-5 h-5 text-lime-400" });
+    if (isSuccess) return React.createElement(CheckCircle, { className: "w-5 h-5 text-primary" });
     if (isError) return React.createElement(XCircle, { className: "w-5 h-5 text-red-400" });
     return icon;
   };
 
-  const getBorderColor = () => {
-    if (isSuccess) return 'border-lime-500/30';
-    if (isError) return 'border-red-500/30';
-    return 'border-gray-500/30';
-  };
 
-  const getProgressBarColor = () => {
-    if (isSuccess) return 'bg-gradient-to-r from-lime-500 to-lime-400';
-    if (isError) return 'bg-gradient-to-r from-red-500 to-red-400';
-    return 'bg-gradient-to-r from-gray-500 to-gray-400';
-  };
 
-  const getTitleColor = () => {
-    if (isSuccess) return 'text-lime-400';
+  const getTextColorClass = () => {
+    if (isSuccess) return 'text-primary';
     if (isError) return 'text-red-400';
     return 'text-gray-300';
   };
 
-  const getIconGlow = () => {
-    if (isSuccess) return 'shadow-lime-500/25';
-    if (isError) return 'shadow-red-500/25';
-    return 'shadow-gray-500/25';
-  };
-
   const duration = toastObj.duration || 4000;
 
-  return React.createElement('div', { className: "premium-toast-wrapper" },
-    React.createElement('div', { className: `premium-saas-toast ${getBorderColor()}` },
-      // Icon Container
-      React.createElement('div', { className: `premium-icon-container ${getIconGlow()}` },
-        getIcon()
-      ),
+  return React.createElement('div', {
+    className: `
+      bg-glass-bg
+      border border-border     
+      rounded-2xl
+      p-4
+      flex items-center gap-3
+      min-w-[320px]
+      max-w-[400px]
+      relative
+    `
+  },
+    // Icon
+    React.createElement('div', {
+      className: "flex-shrink-0"
+    }, getIcon()),
 
-      // Content
-      React.createElement('div', { className: "premium-toast-content" },
-        React.createElement('div', { className: `premium-toast-title ${getTitleColor()}` },
-          title || description
-        )
-      ),
+    // Content
+    React.createElement('div', {
+      className: "flex-1 min-w-0"
+    },
+      React.createElement('div', {
+        className: `font-semibold text-sm ${getTextColorClass()} truncate`
+      }, title || description)
+    ),
 
-      // Close Button
-      !isLoading && React.createElement('button', {
-        onClick: () => toast.dismiss(id),
-        className: "premium-toast-close-btn"
-      },
-        React.createElement(X, { className: "w-4 h-4" })
-      ),
-
-      // Progress Bar
-      !isLoading && duration && duration !== Infinity &&
-      React.createElement('div', { className: "premium-progress-container" },
-        React.createElement('div', {
-          className: `premium-progress-bar ${getProgressBarColor()}`,
-          style: {
-            animation: `shrink ${duration}ms linear forwards`,
-          }
-        })
-      )
+    // Close Button
+    !isLoading && React.createElement('button', {
+      onClick: () => toast.dismiss(id),
+      className: `
+        flex-shrink-0
+        w-6 h-6
+        flex items-center justify-center
+        rounded
+        border-none
+        bg-transparent
+        cursor-pointer
+        text-white/60
+        hover:text-white/90
+        hover:bg-white/10
+        transition-all duration-200
+      `
+    },
+      React.createElement(X, { className: "w-4 h-4" })
     )
   );
 };
@@ -424,7 +399,6 @@ export default {
   showLoginPromise,
   showSignupPromise,
   showFormPromise,
-  toastConfig,
   userFriendlyMessages,
   successMessages,
   getUserFriendlyMessage,

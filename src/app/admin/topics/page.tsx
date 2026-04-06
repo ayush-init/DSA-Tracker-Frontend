@@ -344,7 +344,7 @@ export default function AdminTopicsPage() {
 
          {/* ================= CREATE MODAL ================= */}
          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogContent className="glass card-premium rounded-2xl p-0 overflow-hidden shadow-xl max-w-[520px]">
+            <DialogContent className="  rounded-2xl p-0 overflow-hidden shadow-xl max-w-[520px]">
 
                {/* HEADER */}
                <DialogHeader className="px-6 py-5 border-b border-border/40">
@@ -363,7 +363,7 @@ export default function AdminTopicsPage() {
 
                      {/* ERROR */}
                      {formError && (
-                        <div className="text-sm px-3 py-2 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400">
+                        <div className="text-sm px-3 py-2 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-400">
                            {formError}
                         </div>
                      )}
@@ -379,7 +379,7 @@ export default function AdminTopicsPage() {
                            onChange={(e) => setTopicName(e.target.value)}
                            placeholder="e.g. Arrays and Strings"
                            disabled={submitting}
-                           className="h-11 rounded-xl bg-background/50 border-border focus-visible:ring-2 focus-visible:ring-primary/40 transition-all"
+                           className="h-11 w-full rounded-2xl bg-background/50 border-border focus-visible:ring-2 focus-visible:ring-primary/40 transition-all"
                         />
                      </div>
 
@@ -389,7 +389,7 @@ export default function AdminTopicsPage() {
                            Cover Image
                         </label>
 
-                        <label className="flex items-center justify-between border border-border rounded-xl px-4 py-3 cursor-pointer bg-background/40 hover:border-primary/40 hover:bg-background/60 transition-all">
+                        <label className="flex items-center justify-between border border-border rounded-2xl px-4 py-3 cursor-pointer bg-background/40 hover:border-primary/40 hover:bg-background/60 transition-all">
 
                            <span className="text-sm text-muted-foreground truncate">
                               {photoFile ? photoFile.name : "Choose file"}
@@ -461,7 +461,7 @@ export default function AdminTopicsPage() {
 
          {/* ================= EDIT MODAL ================= */}
          <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-            <DialogContent className="glass card-premium rounded-2xl p-0 overflow-hidden shadow-xl max-w-[520px]">
+            <DialogContent className="rounded-2xl p-0 overflow-hidden shadow-xl max-w-[520px]">
 
                {/* HEADER */}
                <DialogHeader className="px-6 py-5 border-b border-border/40">
@@ -495,7 +495,8 @@ export default function AdminTopicsPage() {
                            value={topicName}
                            onChange={(e) => setTopicName(e.target.value)}
                            disabled={submitting}
-                           className="h-11 rounded-xl bg-background/50 border-border focus-visible:ring-2 focus-visible:ring-primary/40"
+                           className="h-11 rounded-2xl w-full  bg-background/40  border-border focus-visible:ring-2 focus-visible:ring-primary/40"
+                           placeholder='Arrays'
                         />
                      </div>
 
@@ -531,7 +532,7 @@ export default function AdminTopicsPage() {
                         </label>
 
                         {/* FILE INPUT */}
-                        <label className="flex items-center justify-between border border-border rounded-xl px-4 py-3 cursor-pointer bg-background/40 hover:border-primary/40 transition">
+                        <label className="flex items-center justify-between border border-border rounded-2xl px-4 py-3 cursor-pointer bg-background/40 hover:border-primary/40 transition">
 
                            <span className="text-sm text-muted-foreground truncate">
                               {photoFile ? photoFile.name : "Choose file"}
@@ -602,7 +603,7 @@ export default function AdminTopicsPage() {
 
          {/* ================= DELETE MODAL ================= */}
          <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-            <DialogContent className="glass card-premium rounded-2xl p-0 overflow-hidden shadow-xl max-w-[480px] z-50">
+            <DialogContent className="rounded-2xl p-0 overflow-hidden shadow-xl max-w-[480px] z-50">
 
                {/* HEADER */}
                <DialogHeader className="px-6 py-5 border-b border-red-500/20">

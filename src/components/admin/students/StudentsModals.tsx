@@ -391,7 +391,7 @@ export default function StudentsModals({
 
       {/* DELETE MODAL */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="glass rounded-2xl p-0 overflow-hidden shadow-xl max-w-[480px] z-50">
+        <DialogContent className=" rounded-2xl p-0 overflow-hidden shadow-xl max-w-[480px] z-50">
           {/* HEADER */}
           <DialogHeader className="px-6 py-5 border-b border-red-500/20">
             <DialogTitle className="text-lg font-semibold text-red-400">

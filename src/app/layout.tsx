@@ -76,25 +76,7 @@ export default function RootLayout({
             </ErrorBoundary>
           </QueryProvider>
         </ThemeProvider>
-        <Toaster 
-          position="top-right" 
-          theme="system" 
-          richColors={false}
-          closeButton={false}
-          duration={4000}
-          className="premium-saas-toast"
-          toastOptions={{
-            classNames: {
-              toast: 'premium-saas-toast',
-              icon: 'premium-toast-icon',
-              title: 'premium-toast-title',
-              description: 'premium-toast-description',
-              actionButton: 'premium-toast-action',
-              cancelButton: 'premium-toast-cancel',
-              closeButton: 'premium-toast-close',
-            },
-          }}
-        />
+        <Toaster position="top-right" />
       </body>
     </html>
   );

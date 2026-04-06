@@ -33,7 +33,7 @@ import {
    SelectTrigger,
    SelectValue,
 } from '@/components/ui/select';
-import { DeleteModal } from '@/components/DeleteModal';
+
 import { Pagination } from '@/components/Pagination';
 import {
    Table,
@@ -53,6 +53,7 @@ import {
 } from "@/components/ui/dialog";
 import { BruteForceLoader } from '@/components/ui/BruteForceLoader';
 import { handleToastError } from "@/utils/toast-system";
+import { DeleteModal } from '@/components/DeleteModal';
 
 function BadgeByLevel({ level }: { level: string }) {
    const cn = level === 'EASY' ? 'bg-green-500/10 text-green-500' :
@@ -322,12 +323,7 @@ export default function AdminClassDetailsPage() {
                                     href={q.question_link}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="
-                font-medium text-foreground
-                hover:text-primary
-                transition-colors
-                flex items-center gap-1.5
-              "
+                                    className=" font-medium text-foreground hover:text-primary  transition-colors  flex items-center gap-1.5  "
                                  >
                                     {q.question_name}
                                     <ExternalLink className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100" />
@@ -336,11 +332,7 @@ export default function AdminClassDetailsPage() {
 
                               {/* PLATFORM */}
                               <TableCell>
-                                 <span className="
-              text-xs font-semibold tracking-wide
-              text-muted-foreground
-              bg-muted px-2 py-1 rounded-full
-            ">
+                                 <span className="  text-xs font-semibold tracking-wide   text-muted-foreground  bg-muted px-2 py-1 rounded-full  ">
                                     {q.platform}
                                  </span>
                               </TableCell>
@@ -360,8 +352,12 @@ export default function AdminClassDetailsPage() {
                               {/* DATE */}
                               <TableCell>
                                  <span className="text-xs text-muted-foreground">
-                                    {qObj.assigned_at
-                                       ? new Date(qObj.assigned_at).toLocaleDateString('en-GB')
+                                    {q.created_at
+                                       ? new Date(q.created_at).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                          })
                                        : 'N/A'}
                                  </span>
                               </TableCell>
@@ -402,8 +398,6 @@ export default function AdminClassDetailsPage() {
          />
 
          {/* ASSIGN QUESTIONS MODAL */}
-
-
          <Dialog open={isAssignOpen} onOpenChange={setIsAssignOpen}>
             <DialogContent className="max-w-[760px] max-h-[90vh] overflow-auto no-scrollbar flex flex-col p-0 rounded-2xl border border-border bg-background/95 backdrop-blur-xl">
 
@@ -463,7 +457,7 @@ export default function AdminClassDetailsPage() {
                   </div>
 
                   {/* Info */}
-                  <div className="p-3 bg-primary/5 border border-primary/20 rounded-xl">
+                  <div className="p-3 bg-primary/5 border border-primary/20 rounded-2xl">
                      <p className="text-sm text-primary font-medium flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4" />
                         Showing questions only for this topic
@@ -498,7 +492,7 @@ export default function AdminClassDetailsPage() {
                            return (
                               <div
                                  key={q.id}
-                                 className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected
+                                 className={`p-4 rounded-2xl border transition-all cursor-pointer ${isSelected
                                     ? "bg-primary/10 border-primary/30"
                                     : isAssigned
                                        ? "bg-muted/50 border-border/50 opacity-60 cursor-not-allowed"

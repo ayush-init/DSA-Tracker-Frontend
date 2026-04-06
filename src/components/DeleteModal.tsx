@@ -43,7 +43,7 @@ export function DeleteModal({ isOpen, onClose, onConfirm, submitting, title, ite
           </DialogDescription>
 
           <div className="mt-6 w-full text-left">
-            <div className="bg-red-50/80 dark:bg-red-950/30 border border-red-200/60 dark:border-red-900/40 rounded-xl p-4 flex gap-3 text-sm text-red-800 dark:text-red-400 shadow-sm">
+            <div className="bg-red-50/80 dark:bg-red-950/30 border border-red-200/60 dark:border-red-900/40 rounded-2xl p-4 flex gap-3 text-sm text-red-800 dark:text-red-400 shadow-sm">
               <AlertTriangle className="w-5 h-5 flex-shrink-0 text-red-600 dark:text-red-400 mt-0.5" />
               <p className="leading-snug font-medium">
                 {warningText}
@@ -56,7 +56,7 @@ export function DeleteModal({ isOpen, onClose, onConfirm, submitting, title, ite
           <Button 
             variant="outline" 
             onClick={onClose} 
-            className="w-full sm:w-auto font-medium transition-colors rounded-xl bg-background hover:bg-muted/80 shadow-sm"
+            className="w-full sm:w-auto font-medium transition-colors rounded bg-background hover:bg-muted/80 shadow-sm"
           >
             Cancel
           </Button>
@@ -64,7 +64,7 @@ export function DeleteModal({ isOpen, onClose, onConfirm, submitting, title, ite
             variant="destructive" 
             onClick={onConfirm} 
             disabled={submitting} 
-            className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white shadow-sm font-medium transition-colors rounded-xl active:scale-[0.98]"
+            className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white shadow-sm font-medium transition-colors rounded active:scale-[0.98]"
           >
             {submitting ? 'Deleting...' : 'Delete'}
           </Button>

@@ -11,6 +11,5 @@ export const toast = {
   success: glassToast.success,
   error: glassToast.error,
   loading: glassToast.loading,
-  promise: glassToast.promise,
   dismiss: glassToast.dismiss,
 };
