@@ -9,6 +9,7 @@ import { RecentQuestionsSidebar } from '@/components/student/RecentQuestionsSide
 import { RecentQuestionsProvider } from '@/contexts/RecentQuestionsContext';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 import { BruteForceLoader } from '@/components/ui/BruteForceLoader';
+import { DotPattern } from '@/components/ui/DotPattern';
 
 export default function StudentLayout({
   children,
@@ -54,7 +55,18 @@ export default function StudentLayout({
   }
 
   return (
-    <div className="min-h-screen  bg-background text-foreground flex flex-col font-sans selection:bg-primary/20">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-primary/20 relative">
+      {/* Dot Pattern Background */}
+      <DotPattern 
+        baseColor="#64748B"
+        glowColor="#CCFF00"
+        dotSize={2}
+        gap={25}
+        proximity={80}
+        glowIntensity={1.2}
+        waveSpeed={0.4}
+      />
+      
       <ProfileProvider>
         <RecentQuestionsProvider>
           <StudentHeader />

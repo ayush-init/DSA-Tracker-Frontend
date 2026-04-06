@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { studentTopicService } from '@/services/student/topic.service';
 import { Pagination } from '@/components/Pagination';
 import { TopicsLoading } from '@/components/student/topics/TopicLoading';
@@ -15,9 +15,28 @@ export default function TopicsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+  const isFetching = useRef(false);
+  const lastFetchParams = useRef({ page: 1, itemsPerPage: 8, searchQuery: '' });
 
   useEffect(() => {
+    const currentParams = { page, itemsPerPage, searchQuery };
+    
+    // Skip if already fetching with same params
+    if (isFetching.current) {
+      const sameParams = 
+        lastFetchParams.current.page === page &&
+        lastFetchParams.current.itemsPerPage === itemsPerPage &&
+        lastFetchParams.current.searchQuery === searchQuery;
+      
+      if (sameParams) {
+        return;
+      }
+    }
+
     const fetchTopics = async () => {
+      isFetching.current = true;
+      lastFetchParams.current = currentParams;
+      
       try {
         setLoading(true);
         const response = await studentTopicService.getTopics({
@@ -32,8 +51,10 @@ export default function TopicsPage() {
         console.error("Topics fetch error", e);
       } finally {
         setLoading(false);
+        isFetching.current = false;
       }
     };
+
     fetchTopics();
   }, [page, itemsPerPage, searchQuery]);
 
