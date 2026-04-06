@@ -51,11 +51,11 @@ const Drawer = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () =>
       {/* Drawer */}
       <div className="fixed top-0 left-0 h-full w-72 glass border-r border-border/50 z-50 transform transition-transform duration-300 ease-in-out translate-x-0">
         <div className="p-4">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-foreground">Menu</h2>
+          <div className="flex items-center justify-end mb-6">
+            {/* <h2 className="text-lg font-semibold text-foreground">Menu</h2> */}
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-accent/50 transition-colors duration-200"
+              className="p-2 rounded-lg hover:bg-accent/50 transition-colors  duration-200"
               aria-label="Close menu"
             >
               <X className="w-5 h-5 text-foreground" />

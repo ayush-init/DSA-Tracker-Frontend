@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Bookmark as BookmarkIcon, ExternalLink, Edit2, Trash2, CheckCircle2, Circle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/Pagination';
@@ -35,8 +35,28 @@ export default function BookmarksPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editDescription, setEditDescription] = useState('');
   const [updatingBookmark, setUpdatingBookmark] = useState(false);
+  const isFetching = useRef(false);
+  const lastFetchParams = useRef({ page: 1, limit: 10, sort: 'recent', filter: 'all' });
 
   const fetchBookmarks = async () => {
+    const currentParams = { page: pagination.page, limit: pagination.limit, sort: sortBy, filter: filterBy };
+    
+    // Skip if already fetching with same params
+    if (isFetching.current) {
+      const sameParams = 
+        lastFetchParams.current.page === pagination.page &&
+        lastFetchParams.current.limit === pagination.limit &&
+        lastFetchParams.current.sort === sortBy &&
+        lastFetchParams.current.filter === filterBy;
+      
+      if (sameParams) {
+        return;
+      }
+    }
+
+    isFetching.current = true;
+    lastFetchParams.current = currentParams;
+    
     try {
       setLoading(true);
       const response = await bookmarkService.getBookmarks({
@@ -51,6 +71,7 @@ export default function BookmarksPage() {
       console.error('Failed to fetch bookmarks:', error);
     } finally {
       setLoading(false);
+      isFetching.current = false;
     }
   };
 

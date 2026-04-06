@@ -163,7 +163,7 @@ export function EditUsernameModal({
   // INPUT STYLES - Same logic as OnboardingStep1
   const getInputStyles = () => {
     const base =
-      "w-full border p-3 rounded-lg bg-background transition-all duration-300";
+      "w-full border  rounded-lg bg-background transition-all duration-300";
 
     switch (usernameStatus) {
       case "typing":
