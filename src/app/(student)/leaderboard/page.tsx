@@ -17,6 +17,7 @@ export default function StudentLeaderboardPage() {
   const [lCity, setLCity] = useState('All Cities');
   const [lYear, setLYear] = useState<number | null>(null);
   const [lSearch, setLSearch] = useState('');
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Get current student data to set default city and year
   const { data: studentData } = useQuery({
@@ -82,6 +83,7 @@ export default function StudentLeaderboardPage() {
       const batchYear = student.batch?.year;
       setLCity(student.city?.city_name || 'all');
       setLYear(batchYear || null); // Use null instead of hardcoded fallback
+      setIsInitialLoading(false); // Stop initial loading once year is set
     }
   }, [studentData]);
 
@@ -93,6 +95,7 @@ export default function StudentLeaderboardPage() {
   }, [lCity, yearOptions, lYear]);
 
   const data = leaderboardData?.data;
+  const combinedLoading = isLoading || isInitialLoading;
   const handleRefresh = useCallback(() => {
     console.log("REFETCH CALLED");
     refetch();
@@ -161,12 +164,12 @@ export default function StudentLeaderboardPage() {
             })))
           ]}
           allYears={[2024, 2023, ...(isLoading ? [] : yearOptions.filter((y: number) => y !== 2024 && y !== 2023))]}
-          isLoading={isLoading}
+          isLoading={combinedLoading}
           mode="student"
         />
         <PodiumSection
           top3={data?.top10?.slice(0, 3) || []}
-          loading={isLoading}
+          loading={combinedLoading}
           error={error?.message}
           selectedCity={lCity === 'All Cities' ? 'all' : lCity}
         />
@@ -174,7 +177,7 @@ export default function StudentLeaderboardPage() {
 
           <LeaderboardTable
             data={{ leaderboard: data?.top10 || [], total: data?.top10?.length || 0 }}
-            loading={isLoading}
+            loading={combinedLoading}
             error={error?.message}
             selectedCity={lCity === 'All Cities' ? 'all' : lCity}
             page={1}

@@ -250,7 +250,7 @@ export default function StudentHeader() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="relative w-10 h-10 rounded-full border-2 border-border/50 hover:border-accent-primary/50 focus:outline-none transition-all duration-200 hover:scale-105 glass overflow-hidden"
+                        className="relative w-10 h-10 rounded-full border-2 border-border/50 hover:border-accent-primary/50 focus:outline-none transition-all duration-200 hover:scale-105  overflow-hidden"
                         style={{ borderRadius: 'var(--radius-full)', borderColor: 'var(--border)' }}
                       >
                         {profile.data.profileImageUrl ? (
