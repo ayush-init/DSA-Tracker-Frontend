@@ -57,8 +57,15 @@ export default function BookmarksPage() {
         sort: sortBy,
         filter: filterBy
       });
-      setBookmarks(response.bookmarks);
-      setPagination(response.pagination);
+      setBookmarks(response.bookmarks ?? []);
+      setPagination(response.pagination ?? {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPreviousPage: false
+      });
     } catch (error) {
       console.error('Failed to fetch bookmarks:', error);
     } finally {

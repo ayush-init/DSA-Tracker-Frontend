@@ -71,12 +71,12 @@ export function ClassQuestions({ questions, onRefresh }: ClassQuestionsProps) {
             >
               <div className="p-3 sm:p-4">
                 <QuestionRow
-                  questionName={q.question_name || 'Unknown Question'}
+                  questionName={q.question_name || q.questionName || 'Unknown Question'}
                   platform={q.platform || 'Unknown'}
                   level={q.level || 'EASY'}
                   type={q.type || 'CLASSWORK'}
                   isSolved={q.isSolved || false}
-                  link={q.question_link || ''}
+                  link={q.question_link || q.questionLink || ''}
                   questionId={Number(q.id)}
                   isBookmarked={q.isBookmarked || false}
                   onBookmarkClick={handleBookmarkClick}

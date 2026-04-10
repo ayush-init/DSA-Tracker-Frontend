@@ -154,9 +154,9 @@ return (
                 classSlug={cls.slug}
                 index={((pagination?.page || 1) - 1) * (pagination?.limit || 10) + idx + 1}
                 classNameTitle={cls.class_name}
-                date={cls.date || cls.class_date}
-                totalQuestions={cls.total_questions || 0}
-                solvedQuestions={cls.solved_questions || 0}
+                date={cls.date || cls.class_date || cls.classDate}
+                totalQuestions={cls.total_questions || cls.totalQuestions || 0}
+                solvedQuestions={cls.solved_questions || cls.solvedQuestions || 0}
                 pdfUrl={cls.pdf_url}
               />
             </div>

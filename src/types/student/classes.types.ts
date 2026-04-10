@@ -2,19 +2,24 @@
  * Classes-related types for student
  */
 
+import { PracticeQuestion } from './practice.types';
+
 export interface Class {
   id: number;
-  class_slug: string;
+  class_slug?: string;
   slug: string;
   class_name: string;
-  index: number;
+  index?: number;
   duration?: number;
   date?: string;
   class_date?: string;
-  total_questions: number;
-  solved_questions: number;
+  classDate?: string;
+  total_questions?: number;
+  totalQuestions?: number;
+  solved_questions?: number;
+  solvedQuestions?: number;
   pdf_url?: string;
-  topic_slug: string;
+  topic_slug?: string;
 }
 
 export interface ClassCardProps {

@@ -29,8 +29,8 @@ return (
     {/* LIST */}
     <div className="flex flex-col gap-3">
 
-      {topic.classes?.length > 0 ? (
-        topic.classes.map((cls: Class, idx: number) => (
+      {(topic.classes?.length ?? 0) > 0 ? (
+        topic.classes!.map((cls: Class, idx: number) => (
           <div
             key={cls.slug}
             className="animate-in fade-in slide-in-from-bottom-2"
@@ -44,9 +44,9 @@ return (
               classSlug={cls.slug}
               index={idx}
               classNameTitle={cls.class_name}
-              date={cls.date || cls.class_date}
-              totalQuestions={cls.total_questions || 0}
-              solvedQuestions={cls.solved_questions || 0}
+              date={cls.date || cls.class_date || cls.classDate}
+              totalQuestions={cls.total_questions || cls.totalQuestions || 0}
+              solvedQuestions={cls.solved_questions || cls.solvedQuestions || 0}
               pdfUrl={cls.pdf_url}
             />
           </div>

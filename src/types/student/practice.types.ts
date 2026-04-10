@@ -4,12 +4,14 @@
 
 export interface PracticeQuestion {
   id: string;
-  question_name: string;
+  question_name?: string;
+  questionName?: string;
   platform: string;
   level: string;
   type: string;
   isSolved?: boolean;
   question_link?: string;
+  questionLink?: string;
   isBookmarked?: boolean;
   topic?: {
     topic_name: string;
