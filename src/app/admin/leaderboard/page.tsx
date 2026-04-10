@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminStore } from '@/store/adminStore';
+import { Admin } from '@/types/common/api.types';
 import { getAdminLeaderboard } from '@/services/admin.service';
 import { Trophy, Clock } from 'lucide-react';
 import PodiumShimmer from '@/components/leaderboard/shimmers/PodiumShimmer';
@@ -13,6 +14,7 @@ import { EvaluationModal } from '@/components/leaderboard/components/EvaluationM
 import { TimerLeaderboard } from '@/components/leaderboard/components/TimerLeaderboard';
 import PodiumSection from '@/components/leaderboard/components/PodiumSection';
 import { handleToastError } from "@/utils/toast-system";
+import { LeaderboardData, ApiError, BatchSelection } from '@/types/admin/index.types';
 
 // Hook for Debounce
 function useDebounce<T>(value: T, delay: number): T {
@@ -41,19 +43,29 @@ export default function AdminLeaderboardPage() {
   const [limit, setLimit] = useState(Number(searchParams.get('limit')) || 5);
 
   const [lCity, setLCity] = useState('All Cities');
-  const [lYear, setLYear] = useState<number | null>(null);
+  const [lYear, setLYear] = useState<number | undefined>(undefined);
 
   // Leaderboard data state (shared across components)
-  const [leaderboardData, setLeaderboardData] = useState<any>(null);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardData | null>(null);
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
   const [leaderboardError, setLeaderboardError] = useState<string | null>(null);
+  
+  // Refs for preventing double API calls
+  const isFetchingLeaderboard = useRef(false);
+  const lastFetchLeaderboardParams = useRef<{ city: string; year: number | undefined; page: number; limit: number; search: string }>({
+    city: 'all',
+    year: undefined,
+    page: 1,
+    limit: 5,
+    search: ''
+  });
 
 
   // 1. Initialize Default Filters
   useEffect(() => {
     if (!isLoadingContext && !isInit && selectedCity && selectedBatch) {
       const defaultCity = selectedCity.name;
-      const batchYearRaw = (selectedBatch as any).year;
+      const batchYearRaw = (selectedBatch as BatchSelection).year;
       const defaultYear = batchYearRaw ? Number(batchYearRaw) : Number(selectedBatch.name?.match(/\d{4}/)?.[0] || 2024);
       setLCity(defaultCity);
       setLYear(defaultYear);
@@ -77,31 +89,60 @@ export default function AdminLeaderboardPage() {
   // Manual refresh function
   const handleRefresh = async () => {
     if (!isInit) return;
+
+    // Skip if already fetching
+    if (isFetchingLeaderboard.current) {
+      console.log("Already refreshing leaderboard, skipping duplicate call");
+      return;
+    }
+
+    const city = lCity === "All Cities" ? "all" : lCity;
+    const year = lYear === 0 ? undefined : Number(lYear);
+    const search = debouncedSearch || '';
+
+    // Check if same params were already used
+    const currentParams: { city: string; year: number | undefined; page: number; limit: number; search: string } = { city, year, page, limit, search };
+    const sameParams = 
+      lastFetchLeaderboardParams.current.city === city &&
+      lastFetchLeaderboardParams.current.year === year &&
+      lastFetchLeaderboardParams.current.page === page &&
+      lastFetchLeaderboardParams.current.limit === limit &&
+      lastFetchLeaderboardParams.current.search === search;
+
+    if (sameParams) {
+      console.log("Same leaderboard params already fetched, skipping refresh");
+      return;
+    }
+
+    isFetchingLeaderboard.current = true;
+    lastFetchLeaderboardParams.current = currentParams;
     setLeaderboardLoading(true);
     setLeaderboardError(null);
     try {
       const body = {
-        city: lCity === "All Cities" ? "all" : lCity,
-        year: lYear === 0 ? undefined : Number(lYear)
+        city,
+        year
       };
 
       // Fetch all needed data in one call
       const query = {
         page,
         limit,
-        search: debouncedSearch || undefined
+        search
       };
 
       const response = await getAdminLeaderboard(query, body);
       console.log("AdminLeaderboardPage - API Response (Refresh):", response);
-      setLeaderboardData(response);
-    } catch (err: any) {
+      setLeaderboardData(response.data);
+    } catch (err: unknown) {
       handleToastError(err);
       console.error('Failed to refresh leaderboard data:', err);
-      setLeaderboardError(err.message || 'Failed to refresh leaderboard data');
+      const error = err as ApiError;
+      setLeaderboardError(error.message || 'Failed to refresh leaderboard data');
       setLeaderboardData(null);
     } finally {
       setLeaderboardLoading(false);
+      isFetchingLeaderboard.current = false;
     }
   };
 
@@ -110,35 +151,61 @@ export default function AdminLeaderboardPage() {
     const fetchLeaderboardData = async () => {
       if (!isInit) return;
 
+      // Skip if already fetching
+      if (isFetchingLeaderboard.current) {
+        console.log("Already fetching leaderboard data, skipping duplicate call");
+        return;
+      }
+
+      const city = lCity === "All Cities" ? "all" : lCity;
+      const year = lYear === 0 ? undefined : Number(lYear);
+      const search = debouncedSearch || '';
+
+      // Check if same params were already used
+      const currentParams: { city: string; year: number | undefined; page: number; limit: number; search: string } = { city, year, page, limit, search };
+      const sameParams = 
+        lastFetchLeaderboardParams.current.city === city &&
+        lastFetchLeaderboardParams.current.year === year &&
+        lastFetchLeaderboardParams.current.page === page &&
+        lastFetchLeaderboardParams.current.limit === limit &&
+        lastFetchLeaderboardParams.current.search === search;
+
+      if (sameParams) {
+        console.log("Same leaderboard params already fetched, skipping");
+        return;
+      }
+
+      isFetchingLeaderboard.current = true;
+      lastFetchLeaderboardParams.current = currentParams;
       setLeaderboardLoading(true);
       setLeaderboardError(null);
 
       try {
         const body = {
-          city: lCity === "All Cities" ? "all" : lCity,
-          year: lYear === 0 ? undefined : Number(lYear)
+          city,
+          year
         };
 
         // Fetch all needed data in one call
         const query = {
           page,
           limit,
-          search: debouncedSearch || undefined
+          search
         };
 
         const response = await getAdminLeaderboard(query, body);
 
-        // 🆕 Extract cities and years from the single API response
+        // Extract cities and years from the single API response
         if (response?.data) {
           setAllCities(response.data.available_cities || []);
 
           // Extract years from "All Cities" entry
-          const allCitiesEntry = response.data.available_cities?.find((city: any) => city.city_name === "All Cities");
+          const allCitiesEntry = response.data.available_cities?.find((city: { city_name: string; available_years: number[] }) => city.city_name === "All Cities");
           setAllYears(allCitiesEntry?.available_years || []);
 
           // Build cityYearMap for compatibility with existing logic
           const map: Record<string, Set<number>> = {};
-          response.data.available_cities?.forEach((city: any) => {
+          response.data.available_cities?.forEach((city: { city_name: string; available_years: number[] }) => {
             if (city.city_name !== "All Cities") {
               map[city.city_name.toLowerCase()] = new Set(city.available_years);
             }
@@ -146,14 +213,16 @@ export default function AdminLeaderboardPage() {
           setCityYearMap(map);
         }
 
-        setLeaderboardData(response);
-      } catch (err: any) {
+        setLeaderboardData(response.data);
+      } catch (err: unknown) {
         handleToastError(err);
         console.error('Failed to fetch leaderboard data:', err);
-        setLeaderboardError(err.message || 'Failed to fetch leaderboard data');
+        const error = err as ApiError;
+        setLeaderboardError(error.message || 'Failed to fetch leaderboard data');
         setLeaderboardData(null);
       } finally {
         setLeaderboardLoading(false);
+        isFetchingLeaderboard.current = false;
       }
     };
 
@@ -217,7 +286,7 @@ export default function AdminLeaderboardPage() {
         {/* RIGHT */}
         <div className="shrink-0">
           <TimerLeaderboard
-            lastUpdated={leaderboardData?.data?.last_calculated}
+            lastUpdated={leaderboardData?.last_calculated}
             refreshInterval={4}
             onRefresh={handleRefresh}
           />
@@ -239,7 +308,7 @@ export default function AdminLeaderboardPage() {
         mode="admin"
       />
       <PodiumSection
-        top3={leaderboardData?.data?.leaderboard?.slice(0, 3) || []}
+        top3={leaderboardData?.leaderboard?.slice(0, 3) || []}
         loading={leaderboardLoading}
         error={leaderboardError}
         selectedCity={lCity === 'All Cities' ? 'all' : lCity}
@@ -247,7 +316,7 @@ export default function AdminLeaderboardPage() {
 
 
       <LeaderboardTable
-        data={leaderboardData?.data}
+        data={leaderboardData}
         loading={leaderboardLoading}
         error={leaderboardError}
         page={page}

@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useState, useCallback } from 'react';
-import { studentPracticeService, PracticeFilters } from '@/services/student/practice.service';
+import { studentPracticeService } from '@/services/student/practice.service';
+import { PracticeFilters } from '@/types/student/index.types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Pagination } from '@/components/Pagination';
 import { PracticeResults } from '@/components/student/practice/PracticeResults';
 import { PracticeFilters as PracticeFiltersComponent } from '@/components/student/practice/PracticeFilters';
 import { PracticeHeader } from '@/components/student/practice/PracticeHeader';
 import { handleToastError } from "@/utils/toast-system";
-
+import { PracticeQuestion, PracticeFilterOptions } from '@/types/student/index.types';
 
 export default function PracticePage() {
   const router = useRouter();
@@ -26,15 +27,11 @@ export default function PracticePage() {
     limit: 10
   });
 
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<PracticeQuestion[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [filterOptions, setFilterOptions] = useState<{
-    levels: string[];
-    platforms: string[];
-    types: string[];
-  }>({
+  const [filterOptions, setFilterOptions] = useState<PracticeFilterOptions>({
     levels: [],
     platforms: [],
     types: []
@@ -92,10 +89,10 @@ export default function PracticePage() {
     return () => clearTimeout(timeout);
   }, [filters, fetchQuestions]);
 
-  const handleFilterChange = (key: keyof PracticeFilters, value: any) => {
-    setFilters(prev => ({
+  const handleFilterChange = (key: keyof PracticeFilters, value: unknown) => {
+    setFilters((prev: PracticeFilters) => ({
       ...prev,
-      [key]: value,
+      [key]: value as string | number,
       // Reset to page 1 only when changing filters other than page
       ...(key !== 'page' ? { page: 1 } : {})
     }));

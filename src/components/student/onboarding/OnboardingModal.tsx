@@ -6,12 +6,7 @@ import { OnboardingStep1 } from './components/OnboardingStep1';
 import { OnboardingStep2 } from './components/OnboardingStep2';
 import { OnboardingStep3 } from './components/OnboardingStep3';
 import { Modal } from '../../../app/(auth)/shared/components/Modal';
-
-interface OnboardingModalProps {
-  isOpen: boolean;
-  user: any;
-  onClose: () => void;
-}
+import { OnboardingModalProps, OnboardingData } from '@/types/student/index.types';
 
 export function OnboardingModal({ isOpen, user, onClose }: OnboardingModalProps) {
   const { step, setStep, data, setData, confirmChecked, setConfirmChecked, loading, submitOnboarding } = useOnboardingModal(onClose);
@@ -31,7 +26,7 @@ export function OnboardingModal({ isOpen, user, onClose }: OnboardingModalProps)
       const cityId = user?.student?.cityId || user?.student?.city_id || user?.cityId || user?.city_id;
       const batchId = user?.student?.batchId || user?.student?.batch_id || user?.batchId || user?.batch_id;
 
-      setData((prev: any) => ({
+      setData((prev: OnboardingData) => ({
         ...prev,
         username: username || '',
         leetcode_id: leetcode || '',

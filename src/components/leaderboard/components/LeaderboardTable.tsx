@@ -27,7 +27,7 @@ export function LeaderboardTable({
           <TableShimmer />
         </div>
       ) : (
-        <div className=" flex-1 px-3 glass backdrop-blur-2xl rounded-2xl">
+        <div className=" flex-1 px-3 glass mb-5 backdrop-blur-2xl rounded-2xl">
           <Table >
             <TableHeader>
               <TableRow className="backdrop-blur-sm glass rounded-2xl  p-5! ">

@@ -3,24 +3,21 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
-  getAdminQuestions,
-  createAdminQuestion,
-  updateAdminQuestion,
-  deleteAdminQuestion
-} from '@/services/admin.service';
+  getAdminQuestions} from '@/services/admin.service';
 import { handleToastError } from "@/utils/toast-system";
 import QuestionsHeader from '@/components/admin/questions/QuestionsHeader';
 import QuestionsFilter from '@/components/admin/questions/QuestionsFilter';
 import QuestionsTable from '@/components/admin/questions/QuestionsTable';
 import QuestionsModals from '@/components/admin/questions/QuestionsModals';
-
+import { Question } from '@/types/admin/index.types';
+import { Topic } from '@/types/admin/topic.types';
 
 export default function AdminQuestionsBankPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // State
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -37,7 +34,7 @@ export default function AdminQuestionsBankPage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
-  const [selectedQ, setSelectedQ] = useState<any>(null);
+  const [selectedQ, setSelectedQ] = useState<Question | null>(null);
 
   // Form
   const [formName, setFormName] = useState('');
@@ -63,8 +60,8 @@ export default function AdminQuestionsBankPage() {
       // Import api locally here to hit the topics endpoint
       const { default: api } = await import('@/lib/api');
       const res = await api.get('/api/admin/topics');
-      setAllTopics(res.data.map((t: any) => ({ label: t.topic_name, value: t.slug })));
-      setTopicsForBulkUpload(res.data.map((t: any) => ({ label: t.topic_name, value: t.id.toString() })));
+      setAllTopics(res.data.map((t: Topic) => ({ label: t.topic_name, value: t.slug })));
+      setTopicsForBulkUpload(res.data.map((t: Topic) => ({ label: t.topic_name, value: t.id.toString() })));
     } catch (err) {
       handleToastError(err);
       console.error(err);
@@ -87,12 +84,13 @@ export default function AdminQuestionsBankPage() {
   const loadQuestions = useCallback(async () => {
     setLoading(true);
     try {
-      const p: any = { page, limit };
+      const p: { page: number; limit: number; search?: string; level?: string; platform?: string; type?: string; topicSlug?: string } = { page, limit };
       if (qSearch) p.search = qSearch;
       if (qLevel) p.level = qLevel;
       if (qPlatform) p.platform = qPlatform;
       if (qType) p.type = qType;
-      if (searchParams.get('topic') && searchParams.get('topic') !== 'all') p.topicSlug = searchParams.get('topic');
+      const topic = searchParams.get('topic');
+      if (topic && topic !== 'all' && topic !== null) p.topicSlug = topic;
 
       const res = await getAdminQuestions(p);
       setQuestions(res.data);
@@ -126,12 +124,12 @@ export default function AdminQuestionsBankPage() {
     setFormError('');
   };
 
-  const openEdit = (question: any) => {
+  const openEdit = (question: Question) => {
     setSelectedQ(question);
     setIsEditOpen(true);
   };
 
-  const openDelete = (question: any) => {
+  const openDelete = (question: Question) => {
     setSelectedQ(question);
     setIsDeleteOpen(true);
   };

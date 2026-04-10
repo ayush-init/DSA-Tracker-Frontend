@@ -209,18 +209,6 @@
   transition: all 0.2s ease;
 }
 
-.group {
-  background: var(--card);
-  backdrop-filter: blur(16px);
-
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.05);
-
-  transition: all 0.2s ease;
-}
 
 /* .group:hover {
   box-shadow: 0 0 25px var(--hover-glow);

@@ -15,6 +15,7 @@ import { handleToastError } from "@/utils/toast-system";
 import { getAllCities } from '@/services/city.service';
 import { getAllBatches } from '@/services/batch.service';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CitySelection, BatchSelection, ApiError } from '@/types/admin/index.types';
 
 function decodeJwt(token: string) {
   try {
@@ -42,7 +43,7 @@ const getStoredSelections = () => {
   return { city: null, batch: null };
 };
 
-const setStoredSelections = (city: any, batch: any) => {
+const setStoredSelections = (city: CitySelection | null, batch: BatchSelection | null) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem('adminSelections', JSON.stringify({ city, batch }));
   }
@@ -57,21 +58,21 @@ const clearStoredSelections = () => {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  
-  const [user, setUser] = useState<{name: string, role: string} | null>(null);
-  const [cities, setCities] = useState<{id: number, city_name: string}[]>([]);
-  const [batches, setBatches] = useState<{id: number, slug: string, batch_name: string, year: number}[]>([]);
+
+  const [user, setUser] = useState<{ name: string, role: string } | null>(null);
+  const [cities, setCities] = useState<{ id: number, city_name: string }[]>([]);
+  const [batches, setBatches] = useState<{ id: number, slug: string, batch_name: string, year: number }[]>([]);
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const { 
-    selectedCity, 
-    selectedBatch, 
-    setSelectedCity, 
+  const {
+    selectedCity,
+    selectedBatch,
+    setSelectedCity,
     setSelectedBatch,
-    setIsLoadingContext 
+    setIsLoadingContext
   } = useAdminStore();
 
   const handleLogout = () => {
@@ -102,7 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const token = localStorage.getItem('accessToken');
     const cookieToken = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
-    
+
     if (!token && !cookieToken) {
       console.log('No admin token found, redirecting to login');
       handleLogout();
@@ -124,14 +125,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         // Check if we have stored selections
         const storedSelections = getStoredSelections();
-        
+
         if (storedSelections.city) {
           // Restore from localStorage (persisted selections)
           setSelectedCity(storedSelections.city);
-          
+
           const batchList = await getAllBatches(storedSelections.city.name);
           setBatches(batchList);
-          
+
           if (storedSelections.batch) {
             setSelectedBatch(storedSelections.batch);
           }
@@ -140,62 +141,63 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           const activeToken = token || cookieToken;
           const payload = decodeJwt(activeToken || '');
           let initialCityId = payload?.cityId;
-          
+
           let matchingCity = null;
           if (initialCityId) {
-             matchingCity = cityList.find((c: any) => c.id === initialCityId);
+            matchingCity = cityList.find((c) => c.id === initialCityId);
           }
-          
+
           if (!matchingCity && cityList.length > 0) {
-             matchingCity = cityList[0];
+            matchingCity = cityList[0];
           }
 
           if (matchingCity) {
-             const cityData = { id: matchingCity.id, name: matchingCity.city_name };
-             setSelectedCity(cityData);
-             
-             const batchList = await getAllBatches(matchingCity.city_name);
-             setBatches(batchList);
+            const cityData = { id: matchingCity.id, name: matchingCity.city_name };
+            setSelectedCity(cityData);
 
-             const initialBatchId = payload?.batchId;
-             let matchingBatch = null;
-             
-             if (initialBatchId) {
-               matchingBatch = batchList.find((b: any) => b.id === initialBatchId);
-             }
-             if (!matchingBatch && batchList.length > 0) {
-               matchingBatch = batchList[0];
-             }
+            const batchList = await getAllBatches(matchingCity.city_name);
+            setBatches(batchList);
 
-             if (matchingBatch) {
-               const batchData = {
-                 id: matchingBatch.id, 
-                 slug: matchingBatch.slug, 
-                 name: matchingBatch.batch_name,
-                 year: matchingBatch.year
-               };
-               setSelectedBatch(batchData);
-               // Store the initial selections
-               setStoredSelections(cityData, batchData);
-             }
+            const initialBatchId = payload?.batchId;
+            let matchingBatch = null;
+
+            if (initialBatchId) {
+              matchingBatch = batchList.find((b) => b.id === initialBatchId);
+            }
+            if (!matchingBatch && batchList.length > 0) {
+              matchingBatch = batchList[0];
+            }
+
+            if (matchingBatch) {
+              const batchData = {
+                id: matchingBatch.id,
+                slug: matchingBatch.slug,
+                name: matchingBatch.batch_name,
+                year: matchingBatch.year
+              };
+              setSelectedBatch(batchData);
+              // Store the initial selections
+              setStoredSelections(cityData, batchData);
+            }
           }
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         handleToastError(err);
         console.error("Failed to load admin data", err);
-        
+
         // Handle specific error cases
         let errorMessage = 'Authentication failed';
-        if (err.response?.status === 403) {
+        const error = err as ApiError;
+        if (error.response?.status === 403) {
           errorMessage = 'Access forbidden - insufficient permissions';
-        } else if (err.response?.status === 401) {
+        } else if (error.response?.status === 401) {
           errorMessage = 'Authentication failed - token expired';
-        } else if (err.code === 'NETWORK_ERROR') {
+        } else if (error.code === 'NETWORK_ERROR') {
           errorMessage = 'Network error - please check your connection';
         }
-        
+
         setAuthError(errorMessage);
-        
+
         // Clear tokens and redirect to login after a delay
         setTimeout(() => {
           handleLogout();
@@ -213,7 +215,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const handleCityChange = (value: string | number) => {
     const cityId = Number(value);
     const cityObj = cities.find(c => c.id === cityId);
-    
+
     if (cityObj) {
       const cityData = { id: cityObj.id, name: cityObj.city_name };
       setSelectedCity(cityData);
@@ -224,8 +226,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         if (batchList.length > 0) {
           const first = batchList[0];
           const batchData = {
-            id: first.id, 
-            slug: first.slug, 
+            id: first.id,
+            slug: first.slug,
             name: first.batch_name,
             year: first.year
           };
@@ -245,8 +247,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const batchObj = batches.find(b => b.id === batchId);
     if (batchObj) {
       const batchData = {
-        id: batchObj.id, 
-        slug: batchObj.slug, 
+        id: batchObj.id,
+        slug: batchObj.slug,
         name: batchObj.batch_name,
         year: batchObj.year
       };
@@ -268,7 +270,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return <>{children}</>;
   }
 
- 
+
   // Show error state if authentication fails
   if (authError) {
     return (
@@ -292,7 +294,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
     );
   }
-
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <BruteForceLoader size="lg" />
+      </div>
+    );
+  }
   if (!user) return null;
 
   return (
@@ -302,7 +310,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Sidebar
           role="admin"
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => { }}
           user={user}
           navItems={navItems}
           onLogout={handleLogout}
@@ -322,7 +330,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Mobile Menu Backdrop */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={() => setIsMobileMenuOpen(false)}
         />
@@ -365,8 +373,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   }}
                   className={`
                     w-full flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive 
-                      ? 'bg-(--accent-primary)/10 text-(--accent-primary) border-l-4 border-(--accent-primary)' 
+                    ${isActive
+                      ? 'bg-(--accent-primary)/10 text-(--accent-primary) border-l-4 border-(--accent-primary)'
                       : 'text-muted-foreground hover:text-foreground hover:bg-[rgba(204,255,0,0.05)]'
                     }
                   `}
@@ -407,29 +415,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <header className="h-14 glass border rounded-2xl border-border/20 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-30 w-full">
           {/* Dropdown Selectors */}
           <div className="flex items-center gap-4">
-             {selectedCity ? (
-               <Select
-                 value={selectedCity.id.toString()}
-                 onChange={handleCityChange}
-                 options={cities.map(c => ({ label: c.city_name, value: c.id.toString() }))}
-                 placeholder="Select City"
-               />
-             ) : (
-                <Skeleton className="h-9 w-32 rounded-md" />
-             )}
+            {selectedCity ? (
+              <Select
+                value={selectedCity.id.toString()}
+                onChange={handleCityChange}
+                options={cities.map(c => ({ label: c.city_name, value: c.id.toString() }))}
+                placeholder="Select City"
+              />
+            ) : (
+              <Skeleton className="h-9 w-32 rounded-md" />
+            )}
 
-             {selectedCity && (
-               selectedBatch ? (
-                 <Select
-                   value={selectedBatch.id.toString()}
-                   onChange={handleBatchChange}
-                   options={batches.map(b => ({ label: `${b.batch_name} - ${b.year}`, value: b.id.toString() }))}
-                   placeholder="Select Batch"
-                 />
-               ) : (
-                 <Skeleton className="h-9 w-40 rounded-md ml-2" />
-               )
-             )}
+            {selectedCity && (
+              selectedBatch ? (
+                <Select
+                  value={selectedBatch.id.toString()}
+                  onChange={handleBatchChange}
+                  options={batches.map(b => ({ label: `${b.batch_name} - ${b.year}`, value: b.id.toString() }))}
+                  placeholder="Select Batch"
+                />
+              ) : (
+                <Skeleton className="h-9 w-40 rounded-md ml-2" />
+              )
+            )}
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />

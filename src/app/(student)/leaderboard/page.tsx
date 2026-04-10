@@ -1,20 +1,21 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Trophy } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { studentLeaderboardService } from "@/services/student/leaderboard.service";
 import { studentAuthService } from "@/services/student/auth.service";
-import { EvaluationModal } from "@/components/leaderboard/components/EvaluationModal";
-import { FilterBar } from "@/components/leaderboard/components/FilterBar";
-import { LeaderboardTable } from "@/components/leaderboard/components/LeaderboardTable";
-import { TimerLeaderboard } from "@/components/leaderboard/components/TimerLeaderboard";
-import { YourRank } from "@/components/leaderboard/components/YourRank";
+import { EvaluationModal } from "@/components/student/leaderboard/EvaluationModal";
+import { FilterBar } from "@/components/student/leaderboard/FilterBar";
+import { LeaderboardTable } from "@/components/student/leaderboard/LeaderboardTable";
+import { TimerLeaderboard } from "@/components/student/leaderboard/TimerLeaderboard";
+import { YourRank } from "@/components/student/leaderboard/YourRank";
 import { isStudentToken, clearAuthTokens } from "@/lib/auth-utils";
-import PodiumSection from "@/components/leaderboard/components/PodiumSection";
+import PodiumSection from "@/components/student/leaderboard/PodiumSection";
+import { LeaderboardHeader } from "@/components/student/leaderboard/LeaderboardHeader";
+import { LeaderboardCity, LeaderboardData } from '@/types/student/index.types';
 
 export default function StudentLeaderboardPage() {
-  const [lCity, setLCity] = useState('All Cities');
+  const [lCity, setLCity] = useState<LeaderboardCity['city_name']>('All Cities');
   const [lYear, setLYear] = useState<number | null>(null);
   const [lSearch, setLSearch] = useState('');
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -38,7 +39,7 @@ export default function StudentLeaderboardPage() {
       if (!isStudentToken()) {
         clearAuthTokens(); // Clear invalid tokens
         const error = new Error('Access denied. Students only.');
-        (error as any).response = { status: 403, data: { error: 'Access denied. Students only.' } };
+        (error as { response?: { status: number; data?: { error: string } } }).response = { status: 403, data: { error: 'Access denied. Students only.' } };
         throw error;
       }
 
@@ -67,11 +68,11 @@ export default function StudentLeaderboardPage() {
   const yearOptions = leaderboardData?.data?.available_cities ? (() => {
     if (lCity === 'all' || lCity === 'All Cities') {
       // Extract years from "All Cities" entry
-      const allCitiesEntry = leaderboardData.data.available_cities.find((city: any) => city.city_name === "All Cities");
+      const allCitiesEntry = leaderboardData.data.available_cities.find((city: LeaderboardCity) => city.city_name === "All Cities");
       return allCitiesEntry?.available_years || [];
     } else {
       // Find specific city and return its years
-      const cityData = leaderboardData.data.available_cities.find((city: any) => city.city_name === lCity);
+      const cityData = leaderboardData.data.available_cities.find((city: LeaderboardCity) => city.city_name === lCity);
       return cityData?.available_years || [];
     }
   })() : [];
@@ -107,39 +108,11 @@ export default function StudentLeaderboardPage() {
       <YourRank yourRank={data?.yourRank} />
       <div className="max-w-325 xl:max-w-275 2xl:max-w-325  mx-auto px-8 py-2">
 
-        <div className=" glass backdrop-blur-sm  rounded-2xl px-5 py-4 mb-6">
-          <div className="flex items-center justify-between">
-
-            {/* Left */}
-            <div className="flex flex-col gap-1">
-
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-primary" />
-
-                <h2 className="text-2xl font-semibold text-foreground tracking-tight">
-                  Student 
-                  <span className=" ms-2 text-primary">
-                    Leaderboard
-                  </span>
-                </h2>
-
-                <EvaluationModal />
-              </div>
-              <p className="text-xs text-muted-foreground bg-muted/40 px-2.5 py-0.5 
-                    rounded-full border border-border/40 w-fit">
-                Top 10 Students {lCity !== 'all' ? `in ${lCity}` : 'Globally'} {lYear ? `- ${lYear}` : ''}
-              </p>
-
-            </div>
-
-            {/* Right */}
-            <div className="flex items-center">
-              <TimerLeaderboard lastUpdated={data?.last_calculated} />
-            </div>
-
-          </div>
-        </div>
-
+        <LeaderboardHeader
+          lCity={lCity}
+          lYear={lYear}
+          lastUpdated={data?.last_calculated}
+        />
 
         <FilterBar
           lSearch={lSearch}
@@ -150,7 +123,7 @@ export default function StudentLeaderboardPage() {
             ...(isLoading ? [
               { value: 'loading', label: 'Loading...' }
             ] : []),
-            ...(data?.available_cities?.map((city: any) => ({
+            ...(data?.available_cities?.map((city: LeaderboardCity) => ({
               value: city.city_name,
               label: city.city_name
             })) || [])

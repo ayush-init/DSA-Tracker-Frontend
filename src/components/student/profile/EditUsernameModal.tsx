@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { X, CheckCircle, XCircle, User, AlertCircle, Shield } from 'lucide-react';
-import { UsernameForm } from '@/types/student';
+import { UsernameForm } from '@/types/student/index.types';
 import { useUsernameCheck } from '@/components/student/onboarding/hooks/useUsernameCheck';
 import { toast } from '@/utils/toast';
 

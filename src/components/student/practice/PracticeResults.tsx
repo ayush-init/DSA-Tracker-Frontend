@@ -13,42 +13,7 @@ import { PracticeLoading } from './PracticeLoading';
 import { BookmarkModal } from '../bookmarks/BookmarkModal';
 
 import { useBookmarks } from '@/hooks/useBookmarks';
-
-
-
-interface Question {
-
-  id: string;
-
-  question_name: string;
-
-  platform: string;
-
-  level: string;
-
-  type: string;
-
-  isSolved?: boolean;
-
-  question_link?: string;
-
-  isBookmarked?: boolean;
-
-  topic?: {
-
-    topic_name: string;
-
-  };
-
-}
-
-
-
-interface PracticeResultsProps {
-  loading: boolean;
-  questions: Question[];
-  onRefresh?: () => void; // Add refresh callback
-}
+import { PracticeQuestion, PracticeResultsProps } from '@/types/student/index.types';
 
 
 
@@ -56,13 +21,13 @@ export function PracticeResults({ loading, questions, onRefresh }: PracticeResul
   const { addBookmark, loading: bookmarkLoading } = useBookmarks();
   const [bookmarkModal, setBookmarkModal] = useState<{
     isOpen: boolean;
-    question: any;
+    question: PracticeQuestion | null;
   }>({
     isOpen: false,
     question: null
   });
 
-  const handleBookmarkClick = async (questionId: number, question: any) => {
+  const handleBookmarkClick = async (questionId: number, question: PracticeQuestion) => {
     setBookmarkModal({
       isOpen: true,
       question
@@ -113,7 +78,7 @@ return (
     <div className="flex flex-col gap-3 min-h-[400px] glass rounded-2xl px-9 py-6 backdrop-blur-sm">
 
       {questions.length > 0 ? (
-        questions.map((q: Question, idx) => (
+        questions.map((q: PracticeQuestion, idx) => (
           <div
             key={q.id}
             className="animate-in fade-in slide-in-from-bottom-2"

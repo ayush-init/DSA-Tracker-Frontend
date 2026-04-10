@@ -10,12 +10,11 @@ import { RecentQuestionsProvider } from '@/contexts/RecentQuestionsContext';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 import { BruteForceLoader } from '@/components/ui/BruteForceLoader';
 import { DotPattern } from '@/components/ui/DotPattern';
+import { StudentLayoutProps } from '@/types/student/index.types';
 
 export default function StudentLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: StudentLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);

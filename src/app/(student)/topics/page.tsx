@@ -7,10 +7,11 @@ import { TopicsLoading } from '@/components/student/topics/TopicLoading';
 import { TopicsHeader } from '@/components/student/topics/TopicsHeader';
 import { TopicsGrid } from '@/components/student/topics/TopicsGrid';
 import { handleToastError } from "@/utils/toast-system";
+import { Topic, TopicDataResponse } from '@/types/student/index.types';
 
 export default function TopicsPage() {
-  const [topicsData, setTopicsData] = useState<any[]>([]);
-  const [pagination, setPagination] = useState<any>(null);
+  const [topicsData, setTopicsData] = useState<Topic[]>([]);
+  const [pagination, setPagination] = useState<TopicDataResponse['pagination'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("recent");

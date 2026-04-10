@@ -5,16 +5,18 @@ import { usePathname } from 'next/navigation';
 import { Menu, LayoutDashboard, Users, Building2, Layers } from 'lucide-react';
 import { Sidebar, SidebarNavItems } from '@/components/sidebar/Sidebar';
 import { getCurrentSuperAdmin } from '@/services/superadmin.service';
+import { Admin } from '@/types/common/api.types';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { isAdminToken, clearAuthTokens } from '@/lib/auth-utils';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { BruteForceLoader } from '@/components/ui/BruteForceLoader';
 import { handleToastError } from "@/utils/toast-system";
+import { SuperAdminUser } from '@/types/superadmin/index.types';
 
 export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
 
   const pathname = usePathname();
-  const [user, setUser] = React.useState<{ name: string, role: string, email?: string } | null>(null);
+  const [user, setUser] = React.useState<SuperAdminUser | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);

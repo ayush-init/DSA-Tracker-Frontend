@@ -12,7 +12,7 @@ export function FilterBar({
   isLoading = false
 }: any) {
   return (
-    <div className="glass flex backdrop-blur-sm  rounded-2xl p-5 items-center justify-between w-full mb-2">
+    <div className="flex   rounded-2xl p-5 items-center justify-between w-full ">
       {/* LEFT SECTION - SEARCH */}
       <div className="flex-1">
         <div className="relative !w-90 max-w-[420px]">
@@ -21,7 +21,7 @@ export function FilterBar({
               placeholder="Search by name and username..." 
               value={lSearch}
               onChange={(e) => { setLSearch(e.target.value); }}
-              className="pl-9! w-full h-9! border! border-border/40! bg-transparent! focus-visible:ring-1! transition-all  placeholder:text-white"
+              className="pl-9! w-full h-9! border! border-border/40! glass! group! focus-visible:ring-1! transition-all  placeholder:text-white"
           />
         </div>
       </div>
@@ -34,7 +34,7 @@ export function FilterBar({
             setLCity(v); 
           }}
           options={cityOptionsObj}
-          className="w-[150px] h-9 text-sm bg-transparent border border-border/40"
+          className="w-[150px] h-9 text-sm group border border-border/40"
           icon={<MapPin className="w-3.5 h-3.5" />}
           placeholder="City"
         />
@@ -43,7 +43,7 @@ export function FilterBar({
           value={lYear?.toString() || ''} 
           onChange={(v: any) => { setLYear(Number(v)); }}
           options={yearOptionsObj}
-          className="w-[120px] h-9 text-sm bg-transparent border border-border/40"
+          className="w-[120px] h-9 text-sm group border border-border/40"
           icon={<CalendarDays className="w-3.5 h-3.5" />}
           placeholder="Year"
           disabled={!allYears || allYears.length === 0}

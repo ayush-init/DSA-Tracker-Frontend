@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { glassToast, handleToastError } from "@/utils/toast-system";
 import { useLocalStorage } from '../../../../app/(auth)/shared/hooks/useLocalStorage';
+import { OnboardingData } from '@/types/student/index.types';
 
 export function useOnboarding() {
   const router = useRouter();
-  const [onboardingUser] = useLocalStorage<any>('onboardingUser', null);
+  const [onboardingUser] = useLocalStorage<OnboardingData | null>('onboardingUser', null);
   
   const [step, setStep] = useState(1);
   const [data, setData] = useState({ username: '', leetcode_id: '', gfg_id: '', linkedin: '', github: '', originalUsername: '' });

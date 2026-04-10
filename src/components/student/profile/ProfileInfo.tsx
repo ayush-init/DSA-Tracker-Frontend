@@ -1,7 +1,7 @@
 // src/components/student/profile/ProfileInfo.tsx
 import React from 'react';
 import { CheckCircle2, Code, ExternalLink } from 'lucide-react';
-import { StudentProfile } from '@/types/student';
+import { StudentProfile } from '@/types/student/index.types';
 import { LeetCodeIcon, GeeksforGeeksIcon } from '@/components/platform/PlatformIcons';
 
 interface ProfileInfoProps {

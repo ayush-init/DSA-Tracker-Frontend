@@ -25,7 +25,7 @@ export default function StudentsFilter({
   setPage,
 }: StudentsFilterProps) {
   return (
-    <div className="glass backdrop-blur-2xl mb-7 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 justify-between items-center">
+    <div className="glass backdrop-blur-2xl mb-5 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 justify-between items-center">
       {/* SEARCH */}
       <div className="relative w-full sm:max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white w-4 h-4" />

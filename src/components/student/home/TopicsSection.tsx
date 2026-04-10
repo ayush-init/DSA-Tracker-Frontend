@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { TopicCard } from '@/components/student/topics/TopicCard';
 import { BookOpen } from 'lucide-react';
 import { TopicsSectionShimmer } from '@/components/student/home/TopicsSectionShimmer';
+import { Topic } from '@/types/student/index.types';
 
 interface TopicsSectionProps {
-  topics: any[];
+  topics: Topic[];
   loading?: boolean;
 }
 
@@ -38,7 +39,7 @@ export function TopicsSection({ topics, loading = false }: TopicsSectionProps) {
         <TopicsSectionShimmer />
       ) : displayTopics.length > 0 ? (
         <div className=" grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {displayTopics.map((topic: any, idx) => (
+          {displayTopics.map((topic: Topic, idx) => (
             <div key={topic.slug} className="animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}>
               <TopicCard
                 topicSlug={topic.slug}

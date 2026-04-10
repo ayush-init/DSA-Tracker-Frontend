@@ -1,5 +1,5 @@
 import api from '@/lib/api';
-import { ProfileUpdateData } from '@/types/student';
+import { ProfileUpdateData } from '@/types/student/index.types';
 import { handleToastError, showSuccess, showDeleteSuccess } from '@/utils/toast-system';
 
 export const studentProfileService = {

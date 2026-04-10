@@ -1,10 +1,10 @@
 "use client";
 
 import React from 'react';
-import CreateQuestion from '@/app/admin/questions/components/createQuestion';
-import UpdateQuestion from '@/app/admin/questions/components/updateQuestion';
-import DeleteQuestion from '@/app/admin/questions/components/deleteQuestion';
-import BulkUploadModal from '@/app/admin/questions/components/BulkUploadModal';
+import CreateQuestion from '@/components/admin/questions/CreateQuestion';
+import UpdateQuestion from '@/components/admin/questions/UpdateQuestion';
+import DeleteQuestion from '@/components/admin/questions/DeleteQuestion';
+import BulkUploadModal from '@/components/admin/questions/BulkUploadModal';
 
 interface QuestionsModalsProps {
   isCreateOpen: boolean;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { getAllCities, createCity, deleteCity, updateCity, City } from '@/services/city.service';
 import { getAllBatches, Batch } from '@/services/batch.service';
 import { Pagination } from '@/components/Pagination';
@@ -12,6 +12,7 @@ import { CityCard } from '@/components/superadmin/cities/CityCard';
 import { CityModal } from '@/components/superadmin/cities/CityModal';
 import { CityShimmer } from '@/components/superadmin/cities/CityShimmer';
 import { handleToastError, showSuccess, showDeleteSuccess } from "@/utils/toast-system";
+import { CitySubmitPayload } from '@/types/superadmin/index.types';
 
 export default function CitiesPage() {
   const [cities, setCities] = useState<City[]>([]);
@@ -33,8 +34,26 @@ export default function CitiesPage() {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   const [submitting, setSubmitting] = useState(false);
+  
+  // Refs for preventing double API calls
+  const isFetching = useRef(false);
+  const lastFetchParams = useRef<{ fetched: boolean }>({ fetched: false });
 
   const fetchData = async () => {
+    // Skip if already fetching
+    if (isFetching.current) {
+      console.log("Already fetching cities data, skipping duplicate call");
+      return;
+    }
+
+    // Check if data was already fetched
+    if (lastFetchParams.current.fetched) {
+      console.log("Cities data already fetched, skipping");
+      return;
+    }
+
+    isFetching.current = true;
+    lastFetchParams.current = { fetched: true };
     setLoading(true);
     try {
       const respCities = await getAllCities();
@@ -46,6 +65,7 @@ export default function CitiesPage() {
       console.error(err);
     } finally {
       setLoading(false);
+      isFetching.current = false;
     }
   };
 
@@ -70,7 +90,7 @@ export default function CitiesPage() {
     setDelOpen(true);
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: CitySubmitPayload) => {
     setSubmitting(true);
     try {
       if (modalMode === 'create') {

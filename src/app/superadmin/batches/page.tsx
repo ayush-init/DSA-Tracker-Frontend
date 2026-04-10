@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { getAllBatches, createBatch, updateBatch, deleteBatch, Batch } from '@/services/batch.service';
 import { getAllCities, City } from '@/services/city.service';
 import { Pagination } from '@/components/Pagination';
@@ -12,6 +12,7 @@ import { BatchCard } from '@/components/superadmin/batches/BatchCard';
 import { BatchModal } from '@/components/superadmin/batches/BatchModal';
 import { BatchShimmer } from '@/components/superadmin/batches/BatchShimmer';
 import { handleToastError, showSuccess, showDeleteSuccess } from "@/utils/toast-system";
+import { BatchSubmitPayload } from '@/types/superadmin/index.types';
 
 export default function BatchesPage() {
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -37,8 +38,26 @@ export default function BatchesPage() {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   const [submitting, setSubmitting] = useState(false);
+  
+  // Refs for preventing double API calls
+  const isFetching = useRef(false);
+  const lastFetchParams = useRef<{ fetched: boolean }>({ fetched: false });
 
   const fetchData = async () => {
+    // Skip if already fetching
+    if (isFetching.current) {
+      console.log("Already fetching batches data, skipping duplicate call");
+      return;
+    }
+
+    // Check if data was already fetched
+    if (lastFetchParams.current.fetched) {
+      console.log("Batches data already fetched, skipping");
+      return;
+    }
+
+    isFetching.current = true;
+    lastFetchParams.current = { fetched: true };
     setLoading(true);
     try {
       const [batchesRes, citiesRes] = await Promise.all([
@@ -48,10 +67,11 @@ export default function BatchesPage() {
       setBatches(Array.isArray(batchesRes) ? batchesRes : []);
       setCities(Array.isArray(citiesRes) ? citiesRes : []);
     } catch (err) {
-      // handleToastError(err);
+      handleToastError(err);
       console.error(err);
     } finally {
       setLoading(false);
+      isFetching.current = false;
     }
   };
 
@@ -76,7 +96,7 @@ export default function BatchesPage() {
     setDelOpen(true);
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: BatchSubmitPayload) => {
     setSubmitting(true);
     try {
       if (modalMode === 'create') {

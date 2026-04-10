@@ -1,25 +1,13 @@
 import api from '../lib/api';
 import { City } from './city.service';
 import { showSuccess, showDeleteSuccess } from '@/utils/toast-system';
+import { Batch, BatchQueryParams } from '@/types/superadmin/index.types';
 
-export interface Batch {
-  id: number;
-  batch_name: string;
-  year: number;
-  city_id: number;
-  city?: City;
-   slug: string;
-  _count?: {
-    students: number;
-    classes: number;
-  };
-  createdAt?: string;
-  updatedAt?: string;
-}
+export type { Batch, BatchQueryParams };
 
 
 export const getAllBatches = async (city?: string, year?: number): Promise<Batch[]> => {
-  const params: any = {};
+  const params: BatchQueryParams = {};
   if (city) params.city = city;
   if (year) params.year = year;
   

@@ -15,9 +15,9 @@ import { PasswordInputWithValidation } from '@/components/ui/PasswordStrengthInd
 import { usePasswordValidation } from '@/hooks/usePasswordValidation';
 import { AlertTriangle, Plus, FolderEdit, Trash2 } from 'lucide-react';
 import { LeetCodeIcon, GeeksforGeeksIcon } from '@/components/platform/PlatformIcons';
-import { AdminStudent } from '@/types/student';
-import BulkUploadModal from '@/app/admin/students/components/BulkUploadModal';
-import DownloadReportModal from '@/app/admin/students/components/DownloadReportModal';
+import { AdminStudent } from '@/types/student/index.types';
+import BulkUploadModal from './BulkUploadModal';
+import DownloadReportModal from './DownloadReportModal';
 
 interface StudentsModalsProps {
   // Modal states
@@ -102,7 +102,7 @@ export default function StudentsModals({
     <>
       {/* CREATE MODAL */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="sm:max-w-[520px] p-0 overflow-hidden rounded-2xl">
+        <DialogContent className="sm:max-w-[520px] h-[90vh]! p-0 overflow-y-auto no-scrollbar rounded-2xl">
           {/* HEADER */}
           <DialogHeader className="px-6 py-5 bg-muted/30 border-b border-border/50">
             <DialogTitle className="flex items-center gap-3 text-lg font-semibold">

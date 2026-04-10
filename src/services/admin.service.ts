@@ -1,26 +1,12 @@
 import api from '../lib/api';
 import { isAdminToken, clearAuthTokens } from '../lib/auth-utils';
 import { showSuccess, showDeleteSuccess } from '@/utils/toast-system';
-
-export interface Admin {
-  id: number;
-  name: string;
-  email: string;
-  role: 'SUPERADMIN' | 'ADMIN' | 'TEACHER' | 'INTERN';
-  batch_id?: number;
-  city?: {
-    id: number;
-    city_name: string;
-  } | null;
-  batch?: {
-    id: number;
-    batch_name: string;
-    year: number;
-    city_id: number;
-  } | null;
-  created_at?: string;
-  updated_at?: string;
-}
+import { Admin } from '@/types/common/api.types';
+import { TopicQueryParams } from '@/types/admin/topic.types';
+import { ClassFormData, ClassUpdateData } from '@/types/admin/class.types';
+import { QuestionFilters, CreateQuestionData, UpdateQuestionData } from '@/types/admin/question.types';
+import { StudentSubmitPayload, StudentFilters } from '@/types/admin/student.types';
+import { LeaderboardQueryFilters } from '@/types/admin/leaderboard.types';
 
 
 
@@ -45,7 +31,7 @@ export const getAdminStats = async (batch_id: number) => {
   return response.data.data;
 };
 
-export const getAdminBatchTopics = async (batchSlug: string, params?: any) => {
+export const getAdminBatchTopics = async (batchSlug: string, params?: TopicQueryParams) => {
   const response = await api.get(`/api/admin/${batchSlug}/topics`, { params });
   return response.data; // paginated structure { topics, pagination }
 };
@@ -86,13 +72,13 @@ export const getAdminTopicClasses = async (batchSlug: string, topicSlug: string)
   return response.data;
 };
 
-export const createAdminClass = async (batchSlug: string, topicSlug: string, data: any) => {
+export const createAdminClass = async (batchSlug: string, topicSlug: string, data: ClassFormData) => {
   const response = await api.post(`/api/admin/${batchSlug}/topics/${topicSlug}/classes`, data);
   showSuccess('Class Created');
   return response.data;
 };
 
-export const updateAdminClass = async (batchSlug: string, topicSlug: string, classSlug: string, data: any) => {
+export const updateAdminClass = async (batchSlug: string, topicSlug: string, classSlug: string, data: ClassUpdateData) => {
   const response = await api.patch(`/api/admin/${batchSlug}/topics/${topicSlug}/classes/${classSlug}`, data);
   showSuccess('Class Updated');
   return response.data;
@@ -152,18 +138,18 @@ export const updateQuestionVisibilityType = async (
   return response.data;
 };
 
-export const getAdminQuestions = async (params: any) => {
+export const getAdminQuestions = async (params: QuestionFilters) => {
   const response = await api.get('/api/admin/questions', { params });
   return response.data; // paginated structure
 };
 
-export const createAdminQuestion = async (data: any) => {
+export const createAdminQuestion = async (data: CreateQuestionData) => {
   const response = await api.post('/api/admin/questions', data);
   showSuccess('Question Created');
   return response.data;
 };
 
-export const updateAdminQuestion = async (id: number, data: any) => {
+export const updateAdminQuestion = async (id: number, data: UpdateQuestionData) => {
   const response = await api.patch(`/api/admin/questions/${id}`, data);
   showSuccess('Question Updated');
   return response.data;
@@ -179,18 +165,18 @@ export const deleteAdminQuestion = async (id: number) => {
 // ADMIN PANEL STUDENT ENDPOINTS
 // ==========================================
 
-export const getAdminStudents = async (params: any) => {
+export const getAdminStudents = async (params: StudentFilters) => {
   const response = await api.get('/api/admin/students', { params });
   return response.data;
 };
 
-export const createAdminStudent = async (data: any) => {
+export const createAdminStudent = async (data: StudentSubmitPayload) => {
   const response = await api.post('/api/admin/students', data);
   showSuccess('Student Created');
   return response.data;
 };
 
-export const updateAdminStudent = async (id: number, data: any) => {
+export const updateAdminStudent = async (id: number, data: StudentSubmitPayload) => {
   const response = await api.patch(`/api/admin/students/${id}`, data);
   showSuccess('Student Updated');
   return response.data;
@@ -231,7 +217,8 @@ export const getAdminStudentProfile = async (username: string) => {
 // ADMIN PANEL LEADERBOARD ENDPOINTS
 // ==========================================
 
-export const getAdminLeaderboard = async (query: { page?: number; limit?: number; search?: string }, body: any) => {
+export const getAdminLeaderboard = async (query: { page?: number; limit?: number; search?: string }, body: LeaderboardQueryFilters) => {
   const response = await api.post('/api/admin/leaderboard', body, { params: query });
   return response.data;
 };
+

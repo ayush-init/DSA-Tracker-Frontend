@@ -15,7 +15,7 @@ import {
 import { Pagination } from '@/components/Pagination';
 import { Avatar } from '@/components/ui/Avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AdminStudent } from '@/types/student';
+import { AdminStudent } from '@/types/student/index.types';
 
 interface StudentsTableProps {
   students: AdminStudent[];
@@ -43,7 +43,7 @@ export default function StudentsTable({
   onDelete,
 }: StudentsTableProps) {
   return (
-    <div className="glass backdrop-blur-2xl p-3 mb-7 rounded-2xl overflow-hidden">
+    <div className="glass backdrop-blur-2xl px-3 mb-5 rounded-2xl overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           {/* HEADER */}

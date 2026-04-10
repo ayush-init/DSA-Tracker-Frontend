@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { LinkIcon, Github, Linkedin, ExternalLink } from 'lucide-react';
-import { StudentProfile } from '@/types/student';
+import { StudentProfile } from '@/types/student/index.types';
 
 interface SocialLinksProps {
   student: StudentProfile;

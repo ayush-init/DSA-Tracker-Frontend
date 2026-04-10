@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
-import {  Admin, getAdminRoles } from '@/services/admin.service';
+import { useEffect, useState, useMemo, useRef } from 'react';
+import { Admin } from '@/types/common/api.types';
 import { getAllCities, City } from '@/services/city.service';
 import { getAllBatches, Batch } from '@/services/batch.service';
 import { Pagination } from '@/components/Pagination';
@@ -14,6 +14,8 @@ import { AdminFilters } from '@/components/superadmin/admins/AdminFilters';
 import { AdminShimmer } from '@/components/superadmin/admins/AdminShimmer';
 import { handleToastError, showSuccess, showDeleteSuccess } from "@/utils/toast-system";
 import { createAdmin, deleteAdmin, getAllAdmins, updateAdmin } from '@/services/superadmin.service';
+import { AdminCreateData, AdminSubmitPayload } from '@/types/superadmin/index.types';
+import { getAdminRoles } from '@/services/admin.service';
 
 export default function AdminsPage() {
   const [admins, setAdmins] = useState<Admin[]>([]);
@@ -40,8 +42,26 @@ export default function AdminsPage() {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   const [submitting, setSubmitting] = useState(false);
+  
+  // Refs for preventing double API calls
+  const isFetching = useRef(false);
+  const lastFetchParams = useRef<{ fetched: boolean }>({ fetched: false });
 
   const fetchData = async () => {
+    // Skip if already fetching
+    if (isFetching.current) {
+      console.log("Already fetching admins data, skipping duplicate call");
+      return;
+    }
+
+    // Check if data was already fetched
+    if (lastFetchParams.current.fetched) {
+      console.log("Admins data already fetched, skipping");
+      return;
+    }
+
+    isFetching.current = true;
+    lastFetchParams.current = { fetched: true };
     setLoading(true);
     try {
       const [adminsRes, citiesRes, batchesRes, rolesRes] = await Promise.all([
@@ -59,6 +79,7 @@ export default function AdminsPage() {
       console.error(err);
     } finally {
       setLoading(false);
+      isFetching.current = false;
     }
   };
 
@@ -83,7 +104,7 @@ export default function AdminsPage() {
     setDelOpen(true);
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: AdminCreateData) => {
     setSubmitting(true);
     try {
       if (modalMode === 'create') {

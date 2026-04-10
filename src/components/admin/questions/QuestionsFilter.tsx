@@ -55,7 +55,7 @@ export default function QuestionsFilter({
   };
 
   return (
-    <div className="glass backdrop-blur-2xl rounded-2xl p-4 mb-7 flex flex-col gap-4">
+    <div className="glass  rounded-2xl p-4 mb-5 flex flex-col gap-4">
       {/* TOP ROW → SEARCH + BUTTONS */}
       <div className="flex flex-col sm:flex-row justify-between items-center">
         {/* SEARCH */}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExternalLink, Bookmark } from 'lucide-react';
 import { LeetCodeIcon, GeeksforGeeksIcon } from '../../platform/PlatformIcons';
+import { QuestionRowProps } from '@/types/student/admin.types';
 
 export const QuestionRow = ({
   questionName,
@@ -13,7 +14,7 @@ export const QuestionRow = ({
   questionId,
   isBookmarked = false,
   onBookmarkClick
-}: any) => {
+}: QuestionRowProps) => {
 
   const isHomework = type === 'HOMEWORK';
 

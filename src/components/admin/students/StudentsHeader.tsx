@@ -10,7 +10,7 @@ interface StudentsHeaderProps {
 
 export default function StudentsHeader({ totalRecords, selectedBatch }: StudentsHeaderProps) {
   return (
-    <div className="glass backdrop-blur-2xl mb-7 rounded-2xl p-6 flex items-center justify-between">
+    <div className="glass backdrop-blur-2xl mb-5 -mt-3 rounded-2xl p-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
        
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminStore } from '@/store/adminStore';
 import {
@@ -8,13 +8,15 @@ import {
   updateAdminStudent,
   deleteAdminStudent
 } from '@/services/admin.service';
-import { AdminStudent } from '@/types/student';
+import { AdminStudent } from '@/types/student/index.types';
 import { handleToastError, showSuccess, showDeleteSuccess } from "@/utils/toast-system";
+import { ApiError } from '@/types/admin/index.types';
 import { Users } from 'lucide-react';
 import StudentsHeader from '@/components/admin/students/StudentsHeader';
 import StudentsFilter from '@/components/admin/students/StudentsFilter';
 import StudentsTable from '@/components/admin/students/StudentsTable';
 import StudentsModals from '@/components/admin/students/StudentsModals';
+import StudentsSkeleton from '@/components/admin/students/StudentsSkeleton';
 
 export default function AdminStudentsPage() {
   const router = useRouter();
@@ -52,6 +54,14 @@ export default function AdminStudentsPage() {
 
   // Pagination
   const [limit, setLimit] = useState(10);
+  
+  // Refs for preventing double API calls
+  const isFetchingStudents = useRef(false);
+  const lastFetchStudentsParams = useRef<{ batchSlug?: string; page: number; limit: number; search: string }>({
+    page: 1,
+    limit: 10,
+    search: ''
+  });
   const updateUrl = useCallback(() => {
     const params = new URLSearchParams();
     if (sSearch) params.set('search', sSearch);
@@ -61,9 +71,31 @@ export default function AdminStudentsPage() {
 
   const fetchStudents = useCallback(async () => {
     if (!selectedBatch) return;
+
+    // Skip if already fetching
+    if (isFetchingStudents.current) {
+      console.log("Already fetching students, skipping duplicate call");
+      return;
+    }
+
+    // Check if same params were already used
+    const currentParams = { batchSlug: selectedBatch.slug, page, limit, search: sSearch };
+    const sameParams = 
+      lastFetchStudentsParams.current.batchSlug === selectedBatch.slug &&
+      lastFetchStudentsParams.current.page === page &&
+      lastFetchStudentsParams.current.limit === limit &&
+      lastFetchStudentsParams.current.search === sSearch;
+
+    if (sameParams) {
+      console.log("Same students params already fetched, skipping");
+      return;
+    }
+
+    isFetchingStudents.current = true;
+    lastFetchStudentsParams.current = currentParams;
     setLoading(true);
     try {
-      const p: any = { page, limit, batchSlug: selectedBatch.slug };
+      const p: { page: number; limit: number; batchSlug: string; search?: string } = { page, limit, batchSlug: selectedBatch.slug };
       if (sSearch) p.search = sSearch;
 
       const res = await getAdminStudents(p);
@@ -75,6 +107,7 @@ export default function AdminStudentsPage() {
       console.error("Failed to load students", err);
     } finally {
       setLoading(false);
+      isFetchingStudents.current = false;
     }
   }, [sSearch, page, limit, selectedBatch]);
 
@@ -108,7 +141,7 @@ export default function AdminStudentsPage() {
       setIsCreateOpen(false);
       resetForms();
       fetchStudents();
-    } catch (err: any) {
+    } catch (err: unknown) {
       handleToastError(err);
     } finally {
       setSubmitting(false);
@@ -131,7 +164,7 @@ export default function AdminStudentsPage() {
       setIsEditOpen(false);
       resetForms();
       fetchStudents();
-    } catch (err: any) {
+    } catch (err: unknown) {
       handleToastError(err);
     } finally {
       setSubmitting(false);
@@ -146,7 +179,7 @@ export default function AdminStudentsPage() {
       setIsDeleteOpen(false);
       resetForms();
       fetchStudents();
-    } catch (err: any) {
+    } catch (err: unknown) {
       handleToastError(err);
     } finally {
       setSubmitting(false);
@@ -164,7 +197,7 @@ export default function AdminStudentsPage() {
     setFormError('');
   };
 
-  const handleBulkUploadSuccess = (result: any) => {
+  const handleBulkUploadSuccess = (result: { success: number; failed: number }) => {
     // Show success message or refresh data
     fetchStudents();
   };
@@ -186,7 +219,7 @@ export default function AdminStudentsPage() {
     setIsDeleteOpen(true);
   };
 
-  if (isLoadingContext) return <Skeletons />;
+  if (isLoadingContext) return <StudentsSkeleton />;
 
   if (!selectedBatch) {
     return (
@@ -264,62 +297,4 @@ export default function AdminStudentsPage() {
   );
 }
 
-import { Skeleton } from "@/components/ui/skeleton";
-
-function Skeletons() {
-  return (
-    <div className="space-y-6">
-      {/* Header Skeleton */}
-      <div className="glass backdrop-blur-2xl rounded-2xl p-6 flex justify-between items-end">
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-5 w-48" />
-        </div>
-        <Skeleton className="h-10 w-32" />
-      </div>
-
-      {/* Filter Bar Skeleton */}
-      <div className="glass backdrop-blur-2xl rounded-2xl p-4">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-10 w-64" />
-          <div className="flex gap-2">
-            <Skeleton className="h-10 w-32" />
-            <Skeleton className="h-10 w-32" />
-          </div>
-        </div>
-      </div>
-
-      {/* Table Skeleton */}
-      <div className="glass backdrop-blur-2xl rounded-2xl p-4">
-        <div className="space-y-4">
-          {/* Table Header */}
-          <div className="flex items-center gap-4 pb-4 border-b border-border/40">
-            <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-5 w-20 ml-auto" />
-            <Skeleton className="h-5 w-24" />
-          </div>
-          {/* Table Rows */}
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="flex items-center gap-4 py-3">
-              <div className="flex items-center gap-3 flex-1">
-                <Skeleton className="w-10 h-10 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-24" />
-                </div>
-              </div>
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-6 w-16" />
-              <div className="flex gap-2">
-                <Skeleton className="h-8 w-8" />
-                <Skeleton className="h-8 w-8" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 

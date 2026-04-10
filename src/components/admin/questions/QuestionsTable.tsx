@@ -15,19 +15,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination } from '@/components/Pagination';
-
-interface QuestionsTableProps {
-  questions: any[];
-  loading: boolean;
-  page: number;
-  limit: number;
-  totalPages: number;
-  totalRecords: number;
-  setPage: (page: number) => void;
-  setLimit: (limit: number) => void;
-  onEdit: (question: any) => void;
-  onDelete: (question: any) => void;
-}
+import { QuestionsTableProps } from '@/types/admin/question.types';
 
 function TypeBadge({ type }: { type: string }) {
   const isHomework = type === "HOMEWORK";
@@ -111,7 +99,7 @@ export default function QuestionsTable({
   onDelete,
 }: QuestionsTableProps) {
   return (
-    <div className="glass backdrop-blur-2xl  px-4 mb-7  rounded-2xl overflow-hidden">
+    <div className="glass px-4 mb-5  rounded-2xl overflow-hidden">
       <div className="rounded-2xl  overflow-hidden">
         <ScrollArea className="max-h-[600px]">
           <Table className='border-0'>

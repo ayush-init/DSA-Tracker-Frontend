@@ -6,6 +6,7 @@ import { Button } from "../../../../app/(auth)/shared/components/Button";
 import { useUsernameCheck } from "../hooks/useUsernameCheck";
 import { CheckCircle, XCircle } from "lucide-react";
 import { BruteForceLoader } from '@/components/ui/BruteForceLoader';
+import { OnboardingStep1Props } from '@/types/student/index.types';
 
 type UsernameStatus =
   | "idle"
@@ -20,12 +21,7 @@ export function OnboardingStep1({
   setData,
   setStep,
   onboardingUser,
-}: {
-  data: any;
-  setData: any;
-  setStep: any;
-  onboardingUser?: any;
-}) {
+}: OnboardingStep1Props) {
   const [usernameStatus, setUsernameStatus] =
     useState<UsernameStatus>("idle");
 

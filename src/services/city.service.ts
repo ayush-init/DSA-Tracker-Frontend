@@ -1,12 +1,9 @@
 import api from '../lib/api';
 import { showSuccess, showDeleteSuccess } from '@/utils/toast-system';
+import { City as CityType } from '@/types/superadmin/index.types';
 
-export interface City {
-  id: number;
-  city_name: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+// Re-export for backward compatibility with component imports
+export type City = CityType;
 
 export const getAllCities = async (search?: string): Promise<City[]> => {
   const params = search ? { search } : {};

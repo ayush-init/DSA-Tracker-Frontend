@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { glassToast, handleToastError } from "@/utils/toast-system";
+import { OnboardingData } from '@/types/student/index.types';
 
 export function useOnboardingModal(onComplete?: () => void) {
   
   const [step, setStep] = useState(1);
-  const [data, setData] = useState<any>({ username: '', leetcode_id: '', gfg_id: '', linkedin: '', github: '', city_id: null, batch_id: null });
+  const [data, setData] = useState<OnboardingData>({ username: '', leetcode_id: '', gfg_id: '', linkedin: '', github: '', city_id: null, batch_id: null });
   const [confirmChecked, setConfirmChecked] = useState(false);
   const [loading, setLoading] = useState(false);
 

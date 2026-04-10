@@ -3,8 +3,9 @@ import React from 'react';
 import { LeetCodeIcon, GeeksforGeeksIcon } from '@/components/platform/PlatformIcons';
 import { Input } from '../../../../app/(auth)/shared/components/Input';
 import { Button } from '../../../../app/(auth)/shared/components/Button';
+import { OnboardingStep2Props } from '@/types/student/index.types';
 
-export function OnboardingStep2({ data, setData, setStep }: { data: any, setData: any, setStep: any }) {
+export function OnboardingStep2({ data, setData, setStep }: OnboardingStep2Props) {
  return (
   <div className=" space-y-6">
 

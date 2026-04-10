@@ -5,7 +5,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Edit2, BarChart3, GraduationCap, MapPin, Edit3 } from 'lucide-react';
-import { StudentProfile } from '@/types/student';
+import { StudentProfile } from '@/types/student/index.types';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 
 interface ProfileHeaderProps {

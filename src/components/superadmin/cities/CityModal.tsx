@@ -6,13 +6,14 @@ import { Modal } from '@/components/Modal';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Building2 } from 'lucide-react';
+import { CitySubmitPayload } from '@/types/superadmin/index.types';
 
 interface CityModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'create' | 'edit';
   city?: City | null;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: CitySubmitPayload) => Promise<void>;
   submitting: boolean;
 }
 

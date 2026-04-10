@@ -11,12 +11,34 @@ import { SubtopicHeader } from '@/components/student/subtopics/SubtopicHeader';
 import { TopicDetailsShimmer } from '@/components/student/subtopics/TopicDetailsShimmer';
 import { Pagination } from '@/components/Pagination';
 import { handleToastError } from "@/utils/toast-system";
+import { Class } from '@/types/student/index.types';
+
+interface TopicWithPagination {
+  id: number;
+  topic_name: string;
+  slug: string;
+  photo_url?: string;
+  total_questions: number;
+  solved_questions: number;
+  total_classes: number;
+  description?: string;
+  overallProgress?: {
+    totalQuestions: number;
+    solvedQuestions: number;
+  };
+  classes?: Class[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+}
 
 export default function TopicDetailsPage() {
   const { topicSlug } = useParams() as { topicSlug: string };
   const router = useRouter();
 
-  const [topic, setTopic] = useState<any>(null);
+  const [topic, setTopic] = useState<TopicWithPagination | null>(null);
   const [loading, setLoading] = useState(true);
   
   // Pagination state
@@ -74,7 +96,9 @@ export default function TopicDetailsPage() {
 
   const progress = (topic.overallProgress?.totalQuestions || 0) === 0
     ? 0
-    : (topic.overallProgress.solvedQuestions / topic.overallProgress.totalQuestions) * 100;
+    : topic.overallProgress
+    ? (topic.overallProgress.solvedQuestions / topic.overallProgress.totalQuestions) * 100
+    : 0;
 
   // Pagination logic for classes (now using backend pagination)
   const classes = topic.classes || [];
@@ -116,7 +140,7 @@ return (
       <div className="flex flex-col gap-3 mb-6">
 
         {classes.length > 0 ? (
-          classes.map((cls: any, idx: number) => (
+          classes.map((cls: Class, idx: number) => (
             <div
               key={cls.slug}
               className="animate-in fade-in slide-in-from-bottom-2"
@@ -128,11 +152,11 @@ return (
               <ClassCard
                 topicSlug={topic.slug}
                 classSlug={cls.slug}
-                index={(pagination?.page - 1) * (pagination?.limit || 10) + idx + 1}
+                index={((pagination?.page || 1) - 1) * (pagination?.limit || 10) + idx + 1}
                 classNameTitle={cls.class_name}
-                date={cls.classDate}
-                totalQuestions={cls.totalQuestions || 0}
-                solvedQuestions={cls.solvedQuestions || 0}
+                date={cls.date || cls.class_date}
+                totalQuestions={cls.total_questions || 0}
+                solvedQuestions={cls.solved_questions || 0}
                 pdfUrl={cls.pdf_url}
               />
             </div>

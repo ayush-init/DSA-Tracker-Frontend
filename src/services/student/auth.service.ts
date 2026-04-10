@@ -1,6 +1,7 @@
 import api from '@/lib/api';
 import { isStudentToken, clearAuthTokens } from '@/lib/auth-utils';
 import { handleToastError, showSuccess } from '@/utils/toast-system';
+import { StudentLoginCredentials, StudentRegisterData, ResetPasswordData } from '@/types/student/index.types';
 
 export const studentAuthService = {
   getCurrentStudent: async () => {
@@ -16,7 +17,7 @@ export const studentAuthService = {
     return response.data;
   },
 
-  login: async (credentials: any) => {
+  login: async (credentials: StudentLoginCredentials) => {
     const res = await api.post('/api/auth/student/login', credentials);
     // Check if response is undefined (network error handled by interceptor)
     if (!res) {
@@ -26,7 +27,7 @@ export const studentAuthService = {
     return res.data;
   },
 
-  register: async (data: any) => {
+  register: async (data: StudentRegisterData) => {
     const res = await api.post('/api/auth/student/register', data);
     showSuccess('Register');
     return res.data;
@@ -50,7 +51,7 @@ export const studentAuthService = {
     return res.data;
   },
 
-  resetPassword: async (data: any) => {
+  resetPassword: async (data: ResetPasswordData) => {
     const res = await api.post('/api/auth/reset-password', data);
     return res.data;
   },

@@ -9,7 +9,7 @@ interface QuestionsHeaderProps {
 
 export default function QuestionsHeader({ totalRecords }: QuestionsHeaderProps) {
   return (
-    <div className="glass rounded-2xl p-6 mb-7 flex items-center justify-between">
+    <div className="glass rounded-2xl p-6 mb-5 -mt-3 flex items-center justify-between">
       <div className="flex items-center gap-4">
         
         <div>

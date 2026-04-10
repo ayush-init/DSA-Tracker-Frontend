@@ -4,14 +4,7 @@ import React from "react";
 import { Badge } from "../shared/Badge";
 import { ProgressBar } from "../shared/ProgressBar";
 import { Calendar, Clock, FileText } from "lucide-react";
-
-interface ClassHeaderProps {
-  classData: any;
-  progress: number;
-  solvedQuestions: number;
-  totalQuestions: number;
-  formattedDate?: string | null;
-}
+import { ClassHeaderProps } from '@/types/student/index.types';
 
 export function ClassHeader({
   classData,

@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { ClassCard } from '../classes/ClassCard';
+import { Topic, Class } from '@/types/student/index.types';
 
 interface SubtopicClassesProps {
-  topic: any;
+  topic: Topic & { classes?: Class[] };
 }
 
 export function SubtopicClasses({ topic }: SubtopicClassesProps) {
@@ -29,7 +30,7 @@ return (
     <div className="flex flex-col gap-3">
 
       {topic.classes?.length > 0 ? (
-        topic.classes.map((cls: any, idx: number) => (
+        topic.classes.map((cls: Class, idx: number) => (
           <div
             key={cls.slug}
             className="animate-in fade-in slide-in-from-bottom-2"
@@ -43,9 +44,9 @@ return (
               classSlug={cls.slug}
               index={idx}
               classNameTitle={cls.class_name}
-              date={cls.classDate}
-              totalQuestions={cls.totalQuestions || 0}
-              solvedQuestions={cls.solvedQuestions || 0}
+              date={cls.date || cls.class_date}
+              totalQuestions={cls.total_questions || 0}
+              solvedQuestions={cls.solved_questions || 0}
               pdfUrl={cls.pdf_url}
             />
           </div>

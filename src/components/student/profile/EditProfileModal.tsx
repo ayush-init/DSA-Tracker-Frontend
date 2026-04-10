@@ -4,7 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { X, Camera, Trash2, Github, Linkedin, Lock } from 'lucide-react';
 import { LeetCodeIcon, GeeksforGeeksIcon } from '@/components/platform/PlatformIcons';
-import { ProfileEditForm, StudentProfile } from '@/types/student';
+import { ProfileEditForm, StudentProfile } from '@/types/student/index.types';
 import { toast } from '@/utils/toast';
 
 interface EditProfileModalProps {

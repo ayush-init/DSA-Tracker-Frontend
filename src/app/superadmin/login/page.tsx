@@ -31,7 +31,7 @@ export default function SuperAdminLoginPage() {
       }
       
       router.push('/superadmin');
-    } catch (err: any) {
+    } catch (err: unknown) {
       handleToastError(err);
     } finally {
       setLoading(false);

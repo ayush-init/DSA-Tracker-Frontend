@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Layers } from 'lucide-react';
+import { BatchSubmitPayload } from '@/types/superadmin/index.types';
 
 interface BatchModalProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface BatchModalProps {
   mode: 'create' | 'edit';
   batch?: Batch | null;
   cities: City[];
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: BatchSubmitPayload) => Promise<void>;
   submitting: boolean;
 }
 

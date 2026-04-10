@@ -28,46 +28,7 @@ import { TopicsSection } from '@/components/student/home/TopicsSection';
 import { TopicsSectionShimmer } from '@/components/student/home/TopicsSectionShimmer';
 
 import { handleToastError } from "@/utils/toast-system";
-
-
-
-
-
-interface User {
-
-  username?: string;
-
-  leetcode?: string;
-
-  gfg?: string;
-
-  // Add other user properties based on your API response
-
-  codingStats?: {
-
-    totalSolved?: number;
-
-  };
-
-  leaderboard?: {
-
-    globalRank?: string;
-
-  };
-
-  // Add any other properties your user object has
-
-}
-
-
-
-interface StudentDataResponse {
-
-  success: boolean;
-
-  data: User;
-
-}
+import { Topic, User, StudentDataResponse, DashboardStats } from '@/types/student/index.types';
 
 
 
@@ -75,20 +36,16 @@ export default function StudentHomePage() {
 
   const router = useRouter();
 
-  const [topics, setTopics] = useState([]);
+  const [topics, setTopics] = useState<Topic[]>([]);
 
   const { profile, profileLoading } = useProfile();
 
   const [studentResponse, setStudentResponse] = useState<StudentDataResponse | null>(null);
 
-  const [stats, setStats] = useState({
-
+  const [stats, setStats] = useState<DashboardStats>({
     solved: 0,
-
     rank: '-',
-
     topicsActive: 0
-
   });
 
   const [loading, setLoading] = useState(true);
@@ -128,12 +85,9 @@ export default function StudentHomePage() {
 
       console.log("Fetching topics only...");
 
-      const topicsData = await studentTopicService.getTopics({ limit: 8 }).catch((e: any) => {
-
+      const topicsData = await studentTopicService.getTopics({ limit: 8 }).catch((e: unknown) => {
         console.warn("Failed to fetch topics (potentially missing batch)", e);
-
         return { topics: [] };
-
       });
 
 
@@ -144,7 +98,7 @@ export default function StudentHomePage() {
 
       // For now, set basic stats - can be enhanced later if needed
 
-      const activeTopics = (topicsData.topics || []).filter((t: any) => (t.batchSpecificData?.solvedQuestions || 0) > 0).length;
+      const activeTopics = (topicsData.topics || []).filter((t: Topic) => (t.batchSpecificData?.solvedQuestions || 0) > 0).length;
 
 
 
@@ -199,13 +153,10 @@ export default function StudentHomePage() {
         console.error("Dashboard data fetch error", e);
 
         // Handle auth error
-
-        if ((e as any).response?.status === 401) {
-
+        const error = e as { response?: { status?: number } };
+        if (error.response?.status === 401) {
           localStorage.removeItem('accessToken');
-
           window.location.href = '/login';
-
         }
 
       } finally {

@@ -11,38 +11,7 @@ import { BookmarkModal } from '../bookmarks/BookmarkModal';
 import { bookmarkService } from '@/services/bookmark.service';
 
 import { useBookmarks } from '@/hooks/useBookmarks';
-
-
-
-interface Question {
-
-  id: string;
-
-  questionName?: string;
-
-  platform?: string;
-
-  level?: string;
-
-  type?: string;
-
-  isSolved?: boolean;
-
-  questionLink?: string;
-
-  isBookmarked?: boolean;
-
-}
-
-
-
-interface ClassQuestionsProps {
-
-  questions: Question[];
-
-  onRefresh?: () => void; // Add refresh callback
-
-}
+import { PracticeQuestion, ClassQuestionsProps } from '@/types/student/index.types';
 
 
 
@@ -50,13 +19,13 @@ export function ClassQuestions({ questions, onRefresh }: ClassQuestionsProps) {
   const { addBookmark, removeBookmark, loading } = useBookmarks();
   const [bookmarkModal, setBookmarkModal] = useState<{
     isOpen: boolean;
-    question: any;
+    question: PracticeQuestion | null;
   }>({
     isOpen: false,
     question: null
   });
 
-  const handleBookmarkClick = async (questionId: number, question: any) => {
+  const handleBookmarkClick = async (questionId: number, question: PracticeQuestion) => {
     setBookmarkModal({
       isOpen: true,
       question
@@ -65,7 +34,7 @@ export function ClassQuestions({ questions, onRefresh }: ClassQuestionsProps) {
 
   const handleBookmarkSubmit = async (description: string) => {
     if (bookmarkModal.question) {
-      await addBookmark(bookmarkModal.question.id, description);
+      await addBookmark(Number(bookmarkModal.question.id), description);
       setBookmarkModal({ isOpen: false, question: null });
       // Refresh the questions data to update bookmark status
       if (onRefresh) {
@@ -91,7 +60,7 @@ export function ClassQuestions({ questions, onRefresh }: ClassQuestionsProps) {
       <div className="flex flex-col gap-3">
 
         {questions.length > 0 ? (
-          questions.map((q: Question, idx: number) => (
+          questions.map((q: PracticeQuestion, idx: number) => (
             <div
               key={q.id}
               className=" transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
@@ -102,13 +71,13 @@ export function ClassQuestions({ questions, onRefresh }: ClassQuestionsProps) {
             >
               <div className="p-3 sm:p-4">
                 <QuestionRow
-                  questionName={q.questionName || 'Unknown Question'}
+                  questionName={q.question_name || 'Unknown Question'}
                   platform={q.platform || 'Unknown'}
                   level={q.level || 'EASY'}
                   type={q.type || 'CLASSWORK'}
                   isSolved={q.isSolved || false}
-                  link={q.questionLink || ''}
-                  questionId={parseInt(q.id)}
+                  link={q.question_link || ''}
+                  questionId={Number(q.id)}
                   isBookmarked={q.isBookmarked || false}
                   onBookmarkClick={handleBookmarkClick}
                 />

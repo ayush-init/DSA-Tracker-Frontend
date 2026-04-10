@@ -1,6 +1,6 @@
 "use client";
 
-import { Admin } from '@/services/admin.service';
+import { Admin } from '@/types/common/api.types';
 import { ActionButtons } from '@/components/ActionButtons';
 
 interface AdminCardProps {

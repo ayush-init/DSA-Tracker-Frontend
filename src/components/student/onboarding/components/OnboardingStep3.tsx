@@ -3,8 +3,9 @@ import React from 'react';
 import { LeetCodeIcon, GeeksforGeeksIcon } from '@/components/platform/PlatformIcons';
 import { Button } from '../../../../app/(auth)/shared/components/Button';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
+import { OnboardingStep3Props } from '@/types/student/index.types';
 
-export function OnboardingStep3({ data, setStep, confirmChecked, setConfirmChecked, submitOnboarding, loading }: any) {
+export function OnboardingStep3({ data, setStep, confirmChecked, setConfirmChecked, submitOnboarding, loading }: OnboardingStep3Props) {
 
   const handleEdit = () => {
     setStep(2);

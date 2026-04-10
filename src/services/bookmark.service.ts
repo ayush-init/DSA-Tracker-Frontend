@@ -1,37 +1,6 @@
 import api from '@/lib/api';
 import { handleToastError, showSuccess } from '@/utils/toast-system';
-
-export interface Bookmark {
-  id: number;
-  question: {
-    id: number;
-    question_name: string;
-    question_link: string;
-    platform: string;
-    level: string;
-    type: string;
-  };
-  description: string | null;
-  created_at: string;
-  isSolved: boolean;
-}
-
-export interface BookmarksResponse {
-  bookmarks: Bookmark[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  };
-}
-
-export interface BookmarkRequest {
-  question_id: number;
-  description?: string;
-}
+import { Bookmark, BookmarksResponse, BookmarkRequest } from '@/types/student/index.types';
 
 export const bookmarkService = {
   // Get all bookmarks with pagination and filtering

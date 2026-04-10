@@ -2,9 +2,10 @@
 
 import React from "react";
 import { ProgressBar } from "../shared/ProgressBar";
+import { Topic } from '@/types/student/index.types';
 
 interface SubtopicHeaderProps {
-  topic: any;
+  topic: Topic;
   progress: number;
 }
 

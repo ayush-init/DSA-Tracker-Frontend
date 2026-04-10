@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { Admin } from '@/services/admin.service';
+import { Admin } from '@/types/common/api.types';
 import { City } from '@/services/city.service';
 import { Batch } from '@/services/batch.service';
 import { Modal } from '@/components/Modal';
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PasswordInputWithValidation } from "@/components/ui/PasswordStrengthIndicator";
 import { usePasswordValidation } from '@/hooks/usePasswordValidation';
+import { AdminCreateData } from '@/types/superadmin/index.types';
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ interface AdminModalProps {
   cities: City[];
   batches: Batch[];
   roles: string[];
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: AdminCreateData) => Promise<void>;
   submitting: boolean;
 }
 
@@ -96,10 +97,10 @@ export function AdminModal({
   }, [selectedCity, selectedYear, batches]);
 
   const handleSubmit = async () => {
-    const payload: any = {
+    const payload: AdminCreateData = {
       name: formData.name,
       email: formData.email,
-      role: formData.role
+      role: formData.role as 'SUPERADMIN' | 'ADMIN' | 'TEACHER' | 'INTERN'
     };
     if (formData.batch_id) payload.batch_id = Number(formData.batch_id);
     if (mode === 'create') payload.password = formData.password;

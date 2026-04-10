@@ -11,9 +11,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { handleToastError } from "@/utils/toast-system";
 
 import { motion } from "framer-motion";
+import { CustomTooltipProps, Stats } from '@/types/superadmin/index.types';
 
 // Custom Tooltip
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (!active || !payload?.length) return null;
   return (
     <div
@@ -61,11 +62,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     </div>
   );
 };
-interface Stats {
-  totalCities: number;
-  totalBatches: number;
-  totalAdmins: number;
-}
 
 export default function SuperAdminDashboard() {
   const router = useRouter();

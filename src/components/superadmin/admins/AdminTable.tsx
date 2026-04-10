@@ -1,6 +1,6 @@
 "use client";
 
-import { Admin } from '@/services/admin.service';
+import { Admin } from '@/types/common/api.types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ActionButtons } from '@/components/ActionButtons';

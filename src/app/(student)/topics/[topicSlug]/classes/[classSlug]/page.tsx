@@ -14,12 +14,30 @@ import { ClassDetailsShimmer } from '@/components/student/classes/ClassDetailsSh
 import { Pagination } from '@/components/Pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { handleToastError } from "@/utils/toast-system";
+import { PracticeQuestion } from '@/types/student/index.types';
+
+interface ClassData {
+  topic?: { topic_name: string };
+  questions?: PracticeQuestion[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+  totalQuestions?: number;
+  solvedQuestions?: number;
+  class_date?: string;
+  class_name: string;
+  duration_minutes?: number;
+  pdf_url?: string;
+  description?: string;
+}
 
 export default function ClassDetailsPage() {
   const { topicSlug, classSlug } = useParams() as { topicSlug: string; classSlug: string };
   const router = useRouter();
 
-  const [classData, setClassData] = useState<any>(null);
+  const [classData, setClassData] = useState<ClassData | null>(null);
   const [loading, setLoading] = useState(true);
   
   // Pagination and filter state
@@ -156,8 +174,11 @@ return (
 
     {/* QUESTIONS */}
     <ClassQuestions
+      classSlug={classSlug}
+      topicSlug={topicSlug}
       questions={questions}
       onRefresh={fetchClassDetails}
+      loading={loading}
     />
 
     {/* PAGINATION */}

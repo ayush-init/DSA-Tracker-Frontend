@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { handleToastError as handleError } from "@/utils/toast-system";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BatchSelection } from '@/types/student/index.types';
 
 interface Topic {
   id: number;
@@ -41,7 +42,7 @@ interface TopicProgressData {
     id: number;
     name: string;
     username: string;
-    batch: any;
+    batch?: BatchSelection;
   };
   topics: Topic[];
 }
@@ -201,7 +202,7 @@ export default function TopicProgressModal({
           <div className="flex items-center gap-3">
             <Filter className="w-4 h-4 text-muted-foreground" />
 
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as "weak" | "strong" | "name")}>
               <SelectTrigger className=" h-10 px-4 rounded-2xl border border-border  ">
                 <SelectValue />
               </SelectTrigger>
@@ -297,7 +298,13 @@ export default function TopicProgressModal({
 }
 
 /* STAT CARD */
-function Stat({ icon, label, value }: any) {
+interface StatProps {
+  icon: React.ReactNode;
+  label: string;
+  value: number | string;
+}
+
+function Stat({ icon, label, value }: StatProps) {
   return (
     <div className="rounded-2xl glass p-4 flex items-center gap-3 backdrop-blur-sm  hover:border-primary/30 transition-all">
       <div className="p-2 bg-primary/10 rounded text-primary">{icon}</div>

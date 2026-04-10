@@ -5,10 +5,11 @@ import { studentProfileService } from '@/services/student/profile.service';
 import { studentAuthService } from '@/services/student/auth.service';
 import { ErrorHandler } from '@/lib/error-handler';
 import { Button } from '@/components/ui/button';
-import { X, Trash2 } from 'lucide-react';
-import {ProfileDataState, CurrentUserState, ApiError} from '@/types/student';
+import { X } from 'lucide-react';
+import {ProfileDataState, CurrentUserState, ApiError} from '@/types/student/index.types';
 import { EditProfileModal } from '@/components/student/profile/EditProfileModal';
 import { EditUsernameModal } from '@/components/student/profile/EditUsernameModal';
+import { DeleteImageModal } from '@/components/student/profile/DeleteImageModal';
 import { ProfilePageShimmer } from '@/components/student/profile/shimmers';
 import { ProfileHeader } from '@/components/student/profile/ProfileHeader';
 import { ProfileNotFound } from '@/components/student/profile/ProfileNotFound';
@@ -120,11 +121,12 @@ export default function PublicProfilePage() {
 
     try {
 
-      const user = await studentAuthService.getCurrentStudent().catch((e: any) => {
+      const user = await studentAuthService.getCurrentStudent().catch((e: unknown) => {
 
         console.error("Failed to fetch current user", e);
 
-        console.error("Error details:", e.response?.data, e.response?.status);
+        const error = e as { response?: { data?: unknown; status?: number } };
+        console.error("Error details:", error.response?.data, error.response?.status);
 
         return null;
 
@@ -237,7 +239,7 @@ export default function PublicProfilePage() {
 
         apiError?.response?.status === 404 ||           // HTTP status
 
-        (err as any)?.code === 'STUDENT_PROFILE_NOT_FOUND' || // Custom error code from service
+        (err as { code?: string })?.code === 'STUDENT_PROFILE_NOT_FOUND' || // Custom error code from service
 
         userError.message === "Student not found";       // Fallback message
 
@@ -858,72 +860,12 @@ export default function PublicProfilePage() {
 
 
       {/* Delete Image Confirmation Dialog */}
-
-      {showDeleteConfirm && (
-
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-
-          <div className="bg-background rounded-2xl border border-border w-full max-w-sm shadow-2xl p-6">
-
-            <div className="flex items-center gap-3 mb-4">
-
-              <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-
-                <Trash2 className="w-5 h-5 text-red-500" />
-
-              </div>
-
-              <div>
-
-                <h3 className="font-semibold">Remove Profile Photo</h3>
-
-                <p className="text-sm text-muted-foreground">You can cancel this change before saving.</p>
-
-              </div>
-
-            </div>
-
-            <div className="flex gap-2">
-
-              <Button
-
-                onClick={confirmDeleteImage}
-
-                disabled={uploading}
-
-                variant="destructive"
-
-                className="flex-1"
-
-              >
-
-                {uploading ? 'Removing…' : 'Remove Photo'}
-
-              </Button>
-
-              <Button
-
-                onClick={() => setShowDeleteConfirm(false)}
-
-                variant="outline"
-
-                className="flex-1"
-
-                disabled={uploading}
-
-              >
-
-                Cancel
-
-              </Button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
+      <DeleteImageModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDeleteImage}
+        uploading={uploading}
+      />
 
     </div>
 

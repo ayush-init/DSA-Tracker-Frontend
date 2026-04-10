@@ -1,0 +1,128 @@
+"use client";
+
+import React from 'react';
+import { ExternalLink, Edit2, Trash2, CheckCircle2, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { LeetCodeIcon, GeeksforGeeksIcon } from '@/components/platform/PlatformIcons';
+import { Bookmark } from '@/types/student/index.types';
+
+interface BookmarkCardProps {
+  bookmark: Bookmark;
+  onEdit: (bookmark: Bookmark) => void;
+  onDelete: (bookmark: Bookmark) => void;
+  updatingBookmark: boolean;
+}
+
+export function BookmarkCard({ bookmark, onEdit, onDelete, updatingBookmark }: BookmarkCardProps) {
+  const getLevelColor = (level: string) => {
+    switch (level.toUpperCase()) {
+      case 'EASY': return 'text-easy bg-easy/10 border-easy/20';
+      case 'MEDIUM': return 'text-medium bg-medium/10 border-medium/20';
+      case 'HARD': return 'text-hard bg-hard/10 border-hard/20';
+      default: return 'text-muted-foreground bg-muted border-border';
+    }
+  };
+
+  const platform = bookmark.question.platform?.toLowerCase();
+
+  const platformData =
+    platform?.includes("leetcode")
+      ? { name: "LeetCode", icon: <LeetCodeIcon className="w-3.5 h-3.5 text-orange-500" /> }
+      : platform?.includes("gfg")
+        ? { name: "GeeksForGeeks", icon: <GeeksforGeeksIcon className="w-3.5 h-3.5 text-green-500" /> }
+        : { name: bookmark.question.platform, icon: null };
+
+  return (
+    <div className="flex justify-between items-start rounded-2xl border border-border/60 px-6 py-5 hover:border-primary/30 transition-all duration-300">
+      {/* LEFT SIDE */}
+      <div className="flex flex-col gap-3 flex-1">
+
+        {/* TITLE + LINK */}
+        <div
+          className="flex items-center gap-2 cursor-pointer group w-fit"
+          onClick={() => {
+            if (bookmark.question.question_link) {
+              window.open(bookmark.question.question_link, "_blank", "noopener,noreferrer");
+            }
+          }}
+        >
+          <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition">
+            {bookmark.question.question_name}
+          </h3>
+
+          <ExternalLink className="w-4 h-4 opacity-60 group-hover:opacity-100" />
+
+          {bookmark.isSolved && (
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          )}
+        </div>
+
+        {/* BADGES */}
+        <div className="flex items-center gap-3 flex-wrap text-[11px]">
+
+          {/* LEVEL */}
+          <span
+            className={`px-3 py-1 rounded-2xl border font-semibold ${getLevelColor(
+              bookmark.question.level
+            )}`}
+          >
+            {bookmark.question.level}
+          </span>
+
+          {/* PLATFORM */}
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-2xl border border-border bg-muted text-muted-foreground font-medium">
+            {platformData.icon}
+            {platformData.name}
+          </span>
+        </div>
+
+        {/* DESCRIPTION (optional) */}
+        {bookmark.description && (
+          <p className="text-xs text-muted-foreground">
+            {bookmark.description}
+          </p>
+        )}
+      </div>
+
+      {/* RIGHT SIDE */}
+      <div className="flex flex-col items-end gap-3 ml-6">
+
+        {/* ACTIONS */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onEdit(bookmark)}
+            disabled={updatingBookmark}
+            className="rounded-2xl px-3"
+          >
+            {updatingBookmark ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <>
+                <Edit2 className="w-4 h-4 mr-1" />
+                Edit
+              </>
+            )}
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onDelete(bookmark)}
+            className="rounded-2xl px-3 text-destructive border-destructive/30 hover:bg-destructive/10"
+          >
+            <Trash2 className="w-4 h-4 mr-1" />
+            Delete
+          </Button>
+        </div>
+
+        {/* DATE */}
+        <div className="text-xs px-3 py-1.5 rounded-2xl border border-border bg-muted text-muted-foreground">
+          Bookmarked on{" "}
+          {new Date(bookmark.created_at).toLocaleDateString()}
+        </div>
+      </div>
+    </div>
+  );
+}

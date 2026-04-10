@@ -16,6 +16,7 @@ import {
 import api from "@/lib/api";
 import { useRecentQuestions } from "@/contexts/RecentQuestionsContext";
 import { handleToastError } from "@/utils/toast-system";
+import { PaginationState, ApiError } from '@/types/student/index.types';
 
 interface RecentQuestion {
   question_id: number;
@@ -35,7 +36,7 @@ export function RecentQuestionsSidebar() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [pagination, setPagination] = useState<any>(null);
+  const [pagination, setPagination] = useState<PaginationState | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Get date strings for today, yesterday, and ereyesterday
@@ -95,10 +96,11 @@ export function RecentQuestionsSidebar() {
       if (!reset) {
         setPage(prev => prev + 1);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       handleToastError(err);
+      const error = err as ApiError;
       setError(
-        err.response?.data?.error ||
+        error.response?.data?.error ||
           "Failed to fetch recent questions"
       );
     } finally {

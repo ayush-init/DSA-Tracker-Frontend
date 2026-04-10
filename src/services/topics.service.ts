@@ -1,10 +1,5 @@
 import api from '@/lib/api';
-
-export interface Topic {
-  id: number;
-  topic_name: string;
-  slug: string;
-}
+import { Topic } from '@/types/admin/index.types';
 
 export interface TopicsResponse {
   topics: Topic[];

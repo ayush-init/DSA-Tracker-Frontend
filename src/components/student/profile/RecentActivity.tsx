@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Clock, Calendar, Target, CheckCircle2, Flame, Zap, Skull } from 'lucide-react';
-import { RecentActivity as RecentActivityType } from '@/types/student';
+import { RecentActivity as RecentActivityType } from '@/types/student/index.types';
 
 interface RecentActivityProps {
   recentActivity?: RecentActivityType[];

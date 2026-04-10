@@ -1,7 +1,8 @@
 import { showDeleteSuccess, showSuccess } from '@/utils/toast-system';
 import api from '../lib/api';
 import { isAdminToken, clearAuthTokens } from '../lib/auth-utils';
-import { Admin } from './admin.service';
+import { Admin } from '@/types/common/api.types';
+import { AdminCreateData, AdminUpdateData } from '@/types/superadmin/index.types';
 
 export const getCurrentSuperAdmin = async () => {
   // Check if we have an admin token before making the request
@@ -22,7 +23,7 @@ export const getStats = async () => {
 };
 
 
-export const createAdmin = async (data: any) => {
+export const createAdmin = async (data: AdminCreateData) => {
   const response = await api.post('/api/superadmin/admins', data);
   showSuccess('Admin Created');
   return response.data.data;
@@ -30,7 +31,7 @@ export const createAdmin = async (data: any) => {
 
 
 
-export const updateAdmin = async (id: number, data: any) => {
+export const updateAdmin = async (id: number, data: AdminUpdateData) => {
   const response = await api.patch(`/api/superadmin/admins/${id}`, data);
   showSuccess('Admin Updated');
   return response.data.data;
