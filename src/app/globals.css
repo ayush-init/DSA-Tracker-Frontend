@@ -60,13 +60,9 @@
   /* Spacing System (8px base) */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
-  --spacing-md: 16px;
   --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
 
   /* Border Radius System */
-  --radius-sm: 8px;
   --radius-md: 20px;
   --radius-lg: 16px;
   --radius-xl: 23px;
@@ -77,33 +73,15 @@
   --text-sm: 14px;
   --text-base: 16px;
   --text-lg: 18px;
-  --text-xl: 20px;
-  --text-2xl: 24px;
-  --text-3xl: 30px;
-  --text-4xl: 36px;
-  --text-5xl: 48px;
 
   /* Shadow System */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.25);
+  /* Using Tailwind shadow classes instead */
 
   /* ===== NEW ADDITIONS (SAFE) ===== */
-
-  /* Glass Toast Variables */
-  --glass-toast-bg: rgba(22, 24, 33, 0.522);
-  --glass-toast-border: rgba(255, 255, 255, 0.06);
-  --glass-toast-shadow: 0 8px 32px rgba(204, 255, 0, 0.2);
 
   --glass-bg: rgba(22, 24, 33, 0.522);
   --glass-border: rgba(255, 255, 255, 0.06);
   --hover-glow: rgba(204, 255, 0, 0.15);
-  
-  /* Solid card backgrounds for content blocking */
-  --card-solid: rgba(22, 24, 33, 0.95);
-  --card-solid-border: rgba(255, 255, 255, 0.08);
-  --glass-solid: rgba(22, 24, 33, 0.95);
 
   /* ===== TEXT VARIABLES ===== */
   --text-primary: var(--foreground);
@@ -200,25 +178,6 @@
   transition: all 0.2s ease;
 }
 
-/* Solid glass for content blocking */
-.glass-solid {
-  background: var(--glass-solid);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--card-solid-border);
-  transition: all 0.2s ease;
-}
-
-
-/* .group:hover {
-  box-shadow: 0 0 25px var(--hover-glow);
-}  */
-.glass-borderless {
-  background: var(--glass-bg);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  transition: backdrop-filter 0.2s ease, box-shadow 0.2s ease;
-}
 
 .light .glass {
   background: var(--glass-bg);
@@ -243,16 +202,6 @@
   } */
 
 /* ===== CARD UPGRADE ===== */
-
-@keyframes shine {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
-}
 
 @theme inline {
   --color-background: var(--background);
@@ -365,36 +314,8 @@
   p {
     font-size: var(--text-base);
     line-height: 1.6;
-    margin-bottom: var(--spacing-md);
   }
 
-  /* Spacing System */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-lg);
-  }
-
-  .section {
-    margin-bottom: var(--spacing-2xl);
-  }
-
-  .card {
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
-  }
-
-  .flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .flex-between {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
 }
 
 .light body {
@@ -404,21 +325,6 @@
 
 
 @layer utilities {
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-
-    0%,
-    100% {
-      transform: translateY(0px);
-    }
-
-    50% {
-      transform: translateY(-10px);
-    }
-  }
 
   .animate-pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -467,22 +373,17 @@
   transform: translateY(-2px);
 }
 
-/* .light .hover-glow:hover {
-  box-shadow: var(--shadow-md), 0 0 20px var(--hover-glow);
-}  */
+
 
 /* Consistent border radius for all interactive elements */
 button,
-.btn,
-input,
-.card {
+input {
   border-radius: var(--radius-lg);
 }
 
 /* Enhanced focus states */
 input:focus,
-button:focus,
-.btn:focus {
+button:focus {
   outline: none;
 }
 
@@ -491,42 +392,49 @@ button:focus,
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Custom Scrollbar with Logo Color */
-body::-webkit-scrollbar {
-  width: 8px;
+
+/* ===== Clean Scrollbar (All Browsers) ===== */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-body::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-body::-webkit-scrollbar-thumb {
-  background: var(--logo);
-  border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: content-box;
+::-webkit-scrollbar-thumb {
+  background: #888; /* simple gray */
+  border-radius: 10px;
 }
 
-body::-webkit-scrollbar-thumb:hover {
-  background: var(--logo);
-  opacity: 0.8;
-}
+
 
 /* Firefox */
-body {
+* {
   scrollbar-width: thin;
-  scrollbar-color: var(--logo) transparent;
+  scrollbar-color: #CCFF00 transparent;
 }
 
-/* Hide scrollbar but keep scroll working */
-.no-scrollbar::-webkit-scrollbar {
+
+/* 🚫 REMOVE ARROWS (strong fix) */
+::-webkit-scrollbar-button {
   display: none;
+  width: 0;
+  height: 0;
 }
 
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+  display: none;
+  width: 0;
+  height: 0;
 }
+
+
+/* =============================== */
+
 
 /* 🌊 Gradient Animation Keyframes */
 @keyframes gradientMove {
@@ -561,75 +469,9 @@ body {
 
 
 
-.shimmer-wrapper {
-  position: relative;
-  overflow: hidden;
-  background: var(--muted);
-}
-
-.shimmer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(255, 255, 255, 0.1),
-      transparent);
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
-}
 
 
 
-/* Neon Animated Border */
-.sidebar-glow {
-  position: relative;
-}
-
-.sidebar-glow::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-
-  background: linear-gradient(120deg,
-      rgba(204, 255, 0, 0.6),
-      transparent,
-      rgba(204, 255, 0, 0.4));
-
-  background-size: 200% 200%;
-  animation: borderFlow 6s linear infinite;
-
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-
-  pointer-events: none;
-}
-
-@keyframes borderFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  100% {
-    background-position: 200% 50%;
-  }
-}
 
 @font-face {
   font-family: 'Lufga';
@@ -673,55 +515,13 @@ body {
   font-weight: 900;
 }
 
-/* ===== PREMIUM SAAS TOAST SYSTEM ===== */
-
 /* Toast container styles */
 [data-sonner-toaster] {
   --width: 360px;
   --font-family: var(--font-sans);
 }
 
-/* Toast wrapper animations */
-.premium-toast-wrapper {
-  animation: toastSlideIn 0.4s ease-out;
-}
-
-@keyframes toastSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.premium-toast-wrapper[data-exiting="true"] {
-  animation: toastSlideOut 0.3s ease-in forwards;
-}
-
-@keyframes toastSlideOut {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
-  }
-}
-
 /* ===== RESPONSIVE DESIGN ===== */
-@keyframes shrink {
-  from {
-    transform: scaleX(1);
-  }
-  to {
-    transform: scaleX(0);
-  }
-}
-
 @media (max-width: 640px) {
   [data-sonner-toaster] {
     --width: calc(100vw - 32px);

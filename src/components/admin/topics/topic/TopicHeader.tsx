@@ -15,7 +15,7 @@ export default function TopicHeader({ totalRecords }: TopicHeaderProps) {
                <h2 className="text-3xl font-semibold text-foreground">
                   Topic <span className="text-primary ">Curriculum</span>
                </h2>
-               <p className='p-0 m-0 mt-1 text-muted-foreground '>this is paragraph</p>
+               <p className='p-0 m-0 mt-1 text-sm text-muted-foreground '>Admin dashboard to manage topics, classes, and questions with structured curriculum control.</p>
             </div>
          </div>
 

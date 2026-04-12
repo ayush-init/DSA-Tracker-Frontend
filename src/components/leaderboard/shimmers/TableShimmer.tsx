@@ -4,8 +4,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function TableShimmer() {
   return (
-    <div className="bg-card border border-border/60 rounded-xl overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="bg-card border border-border/60 rounded-2xl overflow-hidden">
+      <div className="overflow-hidden">
         <table className="w-full">
           <thead className="bg-muted/50 border-border/80">
             <tr>
@@ -21,7 +21,7 @@ export default function TableShimmer() {
             {Array.from({ length: 10 }).map((_, i) => (
               <tr
                 key={i}
-                className="group hover:bg-muted/40 transition-all duration-200 hover:scale-[1.002] cursor-default bg-primary/2 hover:bg-primary/12 rounded-xl animate-in fade-in slide-in-from-bottom-2"
+                className="group  transition-all duration-200 hover:scale-[1.002] cursor-default bg-primary/2 rounded-2xl animate-in fade-in slide-in-from-bottom-2"
                 style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'both' }}
               >
                 <td className="p-4">

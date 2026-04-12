@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Home, BookOpen, PenTool, Trophy, Lock, Activity, ChevronRight, Menu, X, Bookmark } from 'lucide-react';
+import { LogOut, User, Home, BookOpen, PenTool, Trophy, Lock, Activity, ChevronRight, Menu, X, Bookmark, History } from 'lucide-react';
 import { useRecentQuestions } from '@/contexts/RecentQuestionsContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import { studentAuthService } from '@/services/student/auth.service';
@@ -235,7 +235,7 @@ export default function StudentHeader() {
                 className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-2xl border border-border/40 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/40 transition-all duration-200"
                 title="Recent Questions"
               >
-                <Activity className="w-4 h-4" />
+                <History className="w-4 h-4" />
                 <span className="hidden xl:inline">Recent</span>
               </button>
             )}

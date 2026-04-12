@@ -1,6 +1,6 @@
 "use client";
 
-import { EvaluationModal } from './EvaluationModal';
+import { EvaluationModal } from '@/components/student/leaderboard/EvaluationModal';
 import { TimerLeaderboard } from './TimerLeaderboard';
 
 interface AdminLeaderboardHeaderProps {
@@ -21,7 +21,7 @@ export function AdminLeaderboardHeader({ lastCalculated, onRefresh }: AdminLeade
 
           {/* Modal aligned properly */}
           <div className="shrink-0">
-            <EvaluationModal />
+             <EvaluationModal/>
           </div>
         </div>
 

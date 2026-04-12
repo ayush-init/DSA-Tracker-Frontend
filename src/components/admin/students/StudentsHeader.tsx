@@ -16,7 +16,7 @@ export default function StudentsHeader({ totalRecords, selectedBatch }: Students
 
         <div>
           <h1 className="text-3xl font-semibold">Student<span className="text-primary ms-1">Management</span> </h1>
-          <p className="p-0 m-0 mt-1 text-sm text-muted-foreground" >Hello Student...</p>
+          <p className="p-0 m-0 mt-1 text-sm text-muted-foreground" >Manage students, monitor progress, and handle bulk operations seamlessly.</p>
         </div>
       </div>
 

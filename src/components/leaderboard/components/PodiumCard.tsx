@@ -152,6 +152,7 @@ export const PodiumCard = ({ student, rank, isCenter }: PodiumCardProps) => {
                 <p className={`text-xs ${textColor} truncate flex justify-center`}>
                     <Link
                         href={`/profile/${student?.username}`}
+                        target="_blank"
                         className="flex items-center gap-1"
                     >
                         <span>@{student.username}</span>

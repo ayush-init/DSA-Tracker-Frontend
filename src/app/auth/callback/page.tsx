@@ -56,8 +56,8 @@ export default function AuthCallback() {
         const payload = JSON.parse(atob(token.split('.')[1]));
         
         if (!payload.email?.endsWith('@pwioi.com')) {
-          setError('Please use your PW student email to log in.');
-          showError('Only PW student emails are allowed');
+          showError('Please use your PW student email to log in.');
+          router.push('/login');
           return;
         }
 

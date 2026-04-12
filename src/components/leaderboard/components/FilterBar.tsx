@@ -16,7 +16,7 @@ interface FilterBarProps {
   setLCity: (value: string) => void;
   cityOptionsObj: SelectOption[];
   setLYear: (value: number) => void;
-  lYear: number;
+  lYear: number | undefined;
   yearOptionsObj: SelectOption[];
   allYears: number[];
   mode?: 'admin' | 'student';

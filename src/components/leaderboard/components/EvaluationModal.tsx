@@ -17,7 +17,7 @@ export function EvaluationModal() {
         <DialogHeader className="p-4 border-b border-border">
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-primary" />
-            Evaluation Logic
+            Evalmmkuation Logic
           </DialogTitle>
         </DialogHeader>
         <div className="h-full p-6 overflow-y-auto" style={{ 

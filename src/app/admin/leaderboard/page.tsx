@@ -263,7 +263,6 @@ export default function AdminLeaderboardPage() {
       <PodiumSection
         top3={leaderboardData?.leaderboard?.slice(0, 3) || []}
         loading={leaderboardLoading}
-        error={leaderboardError}
         selectedCity={lCity === 'All Cities' ? 'all' : lCity}
       />
 

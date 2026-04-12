@@ -29,6 +29,7 @@ export default function AdminClassesPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [topicDetails, setTopicDetails] = useState<{ topic_name: string; photo_url?: string; description?: string } | null>(null);
 
   // Modals
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -78,6 +79,7 @@ export default function AdminClassesPage() {
       const response = await apiClient.get(`/api/admin/${selectedBatch.slug}/topics/${topicSlug}/classes?${params}`);
       setClassesList(response.data.data || []);
       setTotalRecords(response.data.pagination?.total || 0);
+      setTopicDetails(response.data.topic || null);
     } catch (err) {
       // Error is handled by API client interceptor
       console.error("Failed to fetch classes", err);
@@ -130,6 +132,7 @@ export default function AdminClassesPage() {
       <ClassHeader
         selectedBatch={selectedBatch}
         topicSlug={topicSlug}
+        topicDetails={topicDetails}
         onAddClick={() => setIsCreateOpen(true)}
       />
 

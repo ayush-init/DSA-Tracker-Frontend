@@ -16,7 +16,7 @@ export default function QuestionsHeader({ totalRecords }: QuestionsHeaderProps) 
           <h2 className="text-3xl font-semibold">
             Question <span className='text-primary'>Bank</span>
           </h2>
-          <p className='m-0 p-0 mt-1 text-muted-foreground ' >Global Questions ....</p>
+          <p className='m-0 p-0 mt-1 text-sm text-muted-foreground ' >Add and manage questions globally across topics with support for bulk operations.</p>
         </div>
       </div>
 

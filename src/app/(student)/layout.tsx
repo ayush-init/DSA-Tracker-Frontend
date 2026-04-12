@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import StudentHeader from '@/components/student/layout/StudentHeader';
 import { studentAuthService } from '@/services/student/auth.service';
 import { isStudentToken, clearAuthTokens } from '@/lib/auth-utils';
@@ -17,8 +18,14 @@ export default function StudentLayout({
 }: StudentLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { theme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // Allow public access to profile routes
@@ -55,16 +62,18 @@ export default function StudentLayout({
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-primary/20 relative">
-      {/* Dot Pattern Background */}
-      <DotPattern 
-        baseColor="#64748B"
-        glowColor="#CCFF00"
-        dotSize={2}
-        gap={25}
-        proximity={80}
-        glowIntensity={1.2}
-        waveSpeed={0.4}
-      />
+      {/* Dot Pattern Background - Only in light theme */}
+      {mounted && theme === 'dark' && (
+        <DotPattern 
+          baseColor="#64748B"
+          glowColor="#CCFF00"
+          dotSize={2}
+          gap={25}
+          proximity={80}
+          glowIntensity={1.2}
+          waveSpeed={0.4}
+        />
+      )}
       
       <ProfileProvider>
         <RecentQuestionsProvider>

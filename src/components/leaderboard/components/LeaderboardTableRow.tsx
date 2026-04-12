@@ -40,7 +40,7 @@ export const LeaderboardTableRow: React.FC<LeaderboardTableRowProps> = ({ entry,
           </div>
           <div className="flex flex-col">
             {entry.name}
-            <Link href={`/profile/${entry.username}`}>
+            <Link href={`/profile/${entry.username}`} target="_blank">
               <div className="flex items-center gap-1">
                 <span className="text-xs text-muted-foreground font-mono cursor-pointer  transition-transform">@{entry.username}</span>
                 <ExternalLink className="w-2.5 h-2.5 text-muted-foreground" />
