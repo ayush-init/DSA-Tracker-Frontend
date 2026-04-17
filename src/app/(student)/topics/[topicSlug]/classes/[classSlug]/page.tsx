@@ -13,6 +13,8 @@ import { ClassQuestions } from '@/components/student/classes/ClassQuestions';
 import { ClassDetailsShimmer } from '@/components/student/classes/ClassDetailsShimmer';
 import { ClassFilterBar } from '@/components/student/classes/ClassFilterBar';
 import { Pagination } from '@/components/Pagination';
+import { TopicDetailsShimmer } from '@/components/student/subtopics/TopicDetailsShimmer';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { PracticeQuestion } from '@/types/student/index.types';
 
 interface ClassData {
@@ -43,19 +45,24 @@ export default function ClassDetailsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [filter, setFilter] = useState('all');
+
+  // Debounced values
+  const debouncedPage = useDebouncedValue(currentPage, 300);
+  const debouncedLimit = useDebouncedValue(limit, 300);
+
   const isFetching = useRef(false);
   const lastFetchParams = useRef({ currentPage: 1, limit: 10, filter: 'all' });
 
   const fetchClassDetails = useCallback(async () => {
-    const currentParams = { currentPage, limit, filter };
-    
+    const currentParams = { currentPage: debouncedPage, limit: debouncedLimit, filter };
+
     // Skip if already fetching with same params
     if (isFetching.current) {
-      const sameParams = 
-        lastFetchParams.current.currentPage === currentPage &&
-        lastFetchParams.current.limit === limit &&
+      const sameParams =
+        lastFetchParams.current.currentPage === debouncedPage &&
+        lastFetchParams.current.limit === debouncedLimit &&
         lastFetchParams.current.filter === filter;
-      
+
       if (sameParams) {
         return;
       }
@@ -63,14 +70,14 @@ export default function ClassDetailsPage() {
 
     isFetching.current = true;
     lastFetchParams.current = currentParams;
-    
+
     try {
       const queryParams = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: limit.toString(),
+        page: debouncedPage.toString(),
+        limit: debouncedLimit.toString(),
         filter: filter
       });
-      
+
       const data = await studentClassService.getClassDetailsWithPagination(topicSlug, classSlug, queryParams.toString());
       setClassData(data);
     } catch (e) {
@@ -81,7 +88,7 @@ export default function ClassDetailsPage() {
       setLoading(false);
       isFetching.current = false;
     }
-  }, [topicSlug, classSlug, currentPage, limit, filter, router]);
+  }, [topicSlug, classSlug, debouncedPage, debouncedLimit, filter, router]);
 
   useEffect(() => {
     fetchClassDetails();

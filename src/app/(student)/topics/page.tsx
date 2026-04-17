@@ -7,6 +7,7 @@ import { TopicsLoading } from '@/components/student/topics/TopicLoading';
 import { TopicsHeader } from '@/components/student/topics/TopicsHeader';
 import { TopicsGrid } from '@/components/student/topics/TopicsGrid';
 import { Topic, TopicDataResponse } from '@/types/student/index.types';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function TopicsPage() {
   const [topicsData, setTopicsData] = useState<Topic[]>([]);
@@ -16,20 +17,26 @@ export default function TopicsPage() {
   const [sortBy, setSortBy] = useState("recent");
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(16);
+
+  // Debounced values
+  const debouncedSearch = useDebouncedValue(searchQuery, 500);
+  const debouncedPage = useDebouncedValue(page, 300);
+  const debouncedLimit = useDebouncedValue(itemsPerPage, 300);
+
   const isFetching = useRef(false);
   const lastFetchParams = useRef({ page: 1, itemsPerPage: 8, searchQuery: '', sortBy: 'recent' });
 
   useEffect(() => {
-    const currentParams = { page, itemsPerPage, searchQuery, sortBy };
-    
+    const currentParams = { page: debouncedPage, itemsPerPage: debouncedLimit, searchQuery: debouncedSearch, sortBy };
+
     // Skip if already fetching with same params
     if (isFetching.current) {
-      const sameParams = 
-        lastFetchParams.current.page === page &&
-        lastFetchParams.current.itemsPerPage === itemsPerPage &&
-        lastFetchParams.current.searchQuery === searchQuery &&
+      const sameParams =
+        lastFetchParams.current.page === debouncedPage &&
+        lastFetchParams.current.itemsPerPage === debouncedLimit &&
+        lastFetchParams.current.searchQuery === debouncedSearch &&
         lastFetchParams.current.sortBy === sortBy;
-      
+
       if (sameParams) {
         return;
       }
@@ -38,13 +45,13 @@ export default function TopicsPage() {
     const fetchTopics = async () => {
       isFetching.current = true;
       lastFetchParams.current = currentParams;
-      
+
       try {
         setLoading(true);
         const response = await studentTopicService.getTopics({
-          page,
-          limit: itemsPerPage,
-          search: searchQuery.trim() || undefined,
+          page: debouncedPage,
+          limit: debouncedLimit,
+          search: debouncedSearch.trim() || undefined,
           sortBy
         });
         setTopicsData(response.topics || []);
@@ -59,7 +66,14 @@ export default function TopicsPage() {
     };
 
     fetchTopics();
-  }, [page, itemsPerPage, searchQuery, sortBy]);
+  }, [debouncedPage, debouncedLimit, debouncedSearch, sortBy]);
+
+  // Reset page to 1 when debounced search changes
+  useEffect(() => {
+    if (searchQuery !== debouncedSearch) {
+      setPage(1);
+    }
+  }, [debouncedSearch, searchQuery]);
 
 
   return (
@@ -69,7 +83,6 @@ export default function TopicsPage() {
           searchQuery={searchQuery}
           setSearchQuery={(query) => {
             setSearchQuery(query);
-            setPage(1); // Reset to first page when searching
           }}
           sortBy={sortBy}
           setSortBy={(newSortBy) => {

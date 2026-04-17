@@ -9,6 +9,7 @@ import QuestionsTable from '@/components/admin/questions/QuestionsTable';
 import QuestionsModals from '@/components/admin/questions/QuestionsModals';
 import { Question } from '@/types/admin/index.types';
 import { Topic } from '@/types/admin/topic.types';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function AdminQuestionsBankPage() {
   const router = useRouter();
@@ -26,6 +27,12 @@ export default function AdminQuestionsBankPage() {
   const [qPlatform, setQPlatform] = useState(searchParams.get('platform') || '');
   const [qType, setQType] = useState(searchParams.get('type') || '');
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
+  const [limit, setLimit] = useState(Number(searchParams.get('limit')) || 10)
+
+  // Debounced values
+  const debouncedSearch = useDebouncedValue(qSearch, 500);
+  const debouncedPage = useDebouncedValue(page, 300);
+  const debouncedLimit = useDebouncedValue(limit, 300);
 
   // Modals
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -43,9 +50,6 @@ export default function AdminQuestionsBankPage() {
   const [formType, setFormType] = useState('HOMEWORK');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
-
-  //Pagination
-  const [limit, setLimit] = useState(Number(searchParams.get('limit')) || 10)
 
   // Note: For assigning topic_id, in a fully polished app we'd fetch all topics here for a dropdown.
   // For simplicity based on requirements, we'll use a number string input or assume the user knows the ID,
@@ -68,22 +72,22 @@ export default function AdminQuestionsBankPage() {
 
   const updateUrl = useCallback(() => {
     const params = new URLSearchParams();
-    if (qSearch) params.set('search', qSearch);
+    if (debouncedSearch) params.set('search', debouncedSearch);
     if (qLevel) params.set('level', qLevel);
     if (qPlatform) params.set('platform', qPlatform);
     if (qType) params.set('type', qType);
     const topic = searchParams.get('topic');
     if (topic && topic !== 'all') params.set('topic', topic);
-    if (page > 1) params.set('page', page.toString());
-    if (limit !== 10) params.set('limit', limit.toString());
+    if (debouncedPage > 1) params.set('page', debouncedPage.toString());
+    if (debouncedLimit !== 10) params.set('limit', debouncedLimit.toString());
     router.replace(`/admin/questions?${params.toString()}`);
-  }, [qSearch, qLevel, qPlatform, qType, page, limit, searchParams.get('topic'), router]);
+  }, [debouncedSearch, qLevel, qPlatform, qType, debouncedPage, debouncedLimit, searchParams.get('topic'), router]);
 
   const loadQuestions = useCallback(async () => {
     setLoading(true);
     try {
-      const p: { page: number; limit: number; search?: string; level?: string; platform?: string; type?: string; topicSlug?: string } = { page, limit };
-      if (qSearch) p.search = qSearch;
+      const p: { page: number; limit: number; search?: string; level?: string; platform?: string; type?: string; topicSlug?: string } = { page: debouncedPage, limit: debouncedLimit };
+      if (debouncedSearch) p.search = debouncedSearch;
       if (qLevel) p.level = qLevel;
       if (qPlatform) p.platform = qPlatform;
       if (qType) p.type = qType;
@@ -100,7 +104,8 @@ export default function AdminQuestionsBankPage() {
     } finally {
       setLoading(false);
     }
-  }, [qSearch, qLevel, qPlatform, qType, page, searchParams.get('topic')]);
+  }, [debouncedSearch, qLevel, qPlatform, qType, debouncedPage, debouncedLimit, searchParams.get('topic')]);
+
 
   useEffect(() => {
     updateUrl();

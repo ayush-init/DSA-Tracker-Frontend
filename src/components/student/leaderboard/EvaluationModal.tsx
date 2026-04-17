@@ -9,13 +9,13 @@ export function EvaluationModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full w-8 h-8 opacity-70 hover:opacity-100 transition-opacity">
-          <HelpCircle className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+        <Button variant="ghost" size="icon" className="rounded-full  hover:opacity-100 transition-opacity">
+          <HelpCircle className="w-5! h-5! text-muted-foreground hover:text-foreground" />
         </Button>
       </DialogTrigger>
       <DialogContent className=" h-[90vh]  overflow-hidden max-w-2xl! p-2 rounded-2xl">
-        <DialogHeader className="p-4 border-b border-border">
-          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+        <DialogHeader className="p-4 h-15!  border-b border-border">
+          <DialogTitle className="text-2xl  font-bold flex items-center gap-2">
             Evaluation <span className='text-primary'>Logic</span>
           </DialogTitle>
         </DialogHeader>

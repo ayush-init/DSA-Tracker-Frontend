@@ -9,30 +9,20 @@ import { useParams, useRouter } from 'next/navigation';
 import { studentTopicService } from '@/services/student/topic.service';
 import { ClassCard } from '@/components/student/classes/ClassCard';
 import { SubtopicBackNav } from '@/components/student/subtopics/SubtopicBackNav';
-
 import { SubtopicHeader } from '@/components/student/subtopics/SubtopicHeader';
-
 import { TopicDetailsShimmer } from '@/components/student/subtopics/TopicDetailsShimmer';
-
 import { Pagination } from '@/components/Pagination';
-
-
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { Class } from '@/types/student/index.types';
 
 
 
 interface TopicWithPagination {
-
   id: number;
-
   topic_name: string;
-
   slug: string;
-
   photo_url?: string;
-
   total_questions: number;
-
   solved_questions: number;
 
   total_classes: number;
@@ -83,6 +73,10 @@ export default function TopicDetailsPage() {
 
   const [limit, setLimit] = useState(10);
 
+  // Debounced values
+  const debouncedPage = useDebouncedValue(currentPage, 300);
+  const debouncedLimit = useDebouncedValue(limit, 300);
+
   const isFetching = useRef(false);
 
   const lastFetchParams = useRef({ currentPage: 1, limit: 10 });
@@ -91,81 +85,46 @@ export default function TopicDetailsPage() {
 
   const fetchTopicWithPagination = useCallback(async (page: number, pageSize: number) => {
 
-    const currentParams = { currentPage: page, limit: pageSize };
-
-    
+    const currentParams = { currentPage: debouncedPage, limit: debouncedLimit };
 
     // Skip if already fetching with same params
-
     if (isFetching.current) {
-
-      const sameParams = 
-
-        lastFetchParams.current.currentPage === page &&
-
-        lastFetchParams.current.limit === pageSize;
-
-      
+      const sameParams =
+        lastFetchParams.current.currentPage === debouncedPage &&
+        lastFetchParams.current.limit === debouncedLimit;
 
       if (sameParams) {
-
         return;
-
       }
-
     }
-
-
 
     isFetching.current = true;
-
     lastFetchParams.current = currentParams;
 
-    
-
     setLoading(true);
-
     try {
-
       // Create query params string
-
       const queryParams = new URLSearchParams({
-
-        page: page.toString(),
-
-        limit: pageSize.toString()
-
+        page: debouncedPage.toString(),
+        limit: debouncedLimit.toString()
       });
 
-      
-
       const data = await studentTopicService.getTopicOverviewWithPagination(topicSlug, queryParams.toString());
-
       setTopic(data);
-
     } catch (e) {
-
       console.error("Topic fetch error", e);
-
       router.push('/topics');
-
     } finally {
-
       setLoading(false);
-
       isFetching.current = false;
-
     }
-
-  }, [topicSlug, router]);
+  }, [topicSlug, router, debouncedPage, debouncedLimit]);
 
 
 
   useEffect(() => {
-
-    fetchTopicWithPagination(currentPage, limit);
-
-  }, [topicSlug, currentPage, limit, fetchTopicWithPagination]);
+    fetchTopicWithPagination(debouncedPage, debouncedLimit);
+  }, [topicSlug, debouncedPage, debouncedLimit, fetchTopicWithPagination]);
 
 
 

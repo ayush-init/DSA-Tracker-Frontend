@@ -35,7 +35,7 @@ export default function DeleteTopicModal({ isOpen, onClose, onSuccess, topic }: 
          onClose();
          onSuccess();
       } catch (err: any) {
-         setFormError(err.response?.data?.error || err.response?.data?.message || 'Failed to delete topic. Ensure it has no classes or questions associated with it.');
+         setFormError(err.response?.data?.error || err.response?.data?.message || 'This topic cannot be deleted because it is currently being used in batches or linked to global question bank.');
       } finally {
          setSubmitting(false);
       }
@@ -65,19 +65,21 @@ export default function DeleteTopicModal({ isOpen, onClose, onSuccess, topic }: 
                   </p>
                </div>
 
-               <div className="glass rounded-2xl p-4 flex items-center gap-3 border border-border/40">
-                  <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
-                     <Trash2 className="w-4 h-4 text-red-400" />
+               {(topic?.classCount ?? 0) > 0 && (
+                  <div className="glass rounded-2xl p-4 flex items-center gap-3 border border-border/40">
+                     <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+                        <Trash2 className="w-4 h-4 text-red-400" />
+                     </div>
+                     <div>
+                        <p className="text-sm font-semibold text-foreground">
+                           {topic?.topic_name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                           {topic?.classCount} classes attached
+                        </p>
+                     </div>
                   </div>
-                  <div>
-                     <p className="text-sm font-semibold text-foreground">
-                        {topic?.topic_name}
-                     </p>
-                     <p className="text-xs text-muted-foreground">
-                        {topic?.classCount} classes attached
-                     </p>
-                  </div>
-               </div>
+               )}
 
                {(topic?.classCount ?? 0) > 0 && (
                   <div className="border border-yellow-500/30 bg-yellow-500/10 rounded-2xl p-4 flex gap-3">
@@ -89,7 +91,7 @@ export default function DeleteTopicModal({ isOpen, onClose, onSuccess, topic }: 
                )}
 
                {formError && (
-                  <div className="text-sm px-3 py-2 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400">
+                  <div className="text-sm px-3 py-2 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-400">
                      {formError}
                   </div>
                )}

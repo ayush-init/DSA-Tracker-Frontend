@@ -6,7 +6,6 @@ import { useAdminStore } from '@/store/adminStore';
 import { Admin } from '@/types/common/api.types';
 import { getAdminLeaderboard } from '@/services/admin.service';
 import { LeaderboardTable } from '@/components/leaderboard/components/LeaderboardTable';
-import { FilterBar } from '@/components/leaderboard/components/FilterBar';
 import { AdminLeaderboardHeader } from '@/components/leaderboard/components/AdminLeaderboardHeader';
 import PodiumSection from '@/components/leaderboard/components/PodiumSection';
 import { LeaderboardData, ApiError, BatchSelection } from '@/types/admin/index.types';
@@ -26,7 +25,9 @@ export default function AdminLeaderboardPage() {
   const debouncedSearch = useDebouncedValue(lSearch, 400);
 
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
-  const [limit, setLimit] = useState(Number(searchParams.get('limit')) || 5);
+  const debouncedPage = useDebouncedValue(page, 300);
+  const [limit, setLimit] = useState(Number(searchParams.get('limit')) || 10);
+  const debouncedLimit = useDebouncedValue(limit, 300);
 
   const [lCity, setLCity] = useState('All Cities');
   const [lYear, setLYear] = useState<number | undefined>(undefined);
@@ -86,12 +87,12 @@ export default function AdminLeaderboardPage() {
     const search = debouncedSearch || '';
 
     // Check if same params were already used (skip if not forced)
-    const currentParams: { city: string; year: number | undefined; page: number; limit: number; search: string } = { city, year, page, limit, search };
+    const currentParams: { city: string; year: number | undefined; page: number; limit: number; search: string } = { city, year, page: debouncedPage, limit: debouncedLimit, search };
     const sameParams =
       lastFetchLeaderboardParams.current.city === city &&
       lastFetchLeaderboardParams.current.year === year &&
-      lastFetchLeaderboardParams.current.page === page &&
-      lastFetchLeaderboardParams.current.limit === limit &&
+      lastFetchLeaderboardParams.current.page === debouncedPage &&
+      lastFetchLeaderboardParams.current.limit === debouncedLimit &&
       lastFetchLeaderboardParams.current.search === search;
 
     if (!force && sameParams) {
@@ -110,8 +111,8 @@ export default function AdminLeaderboardPage() {
 
       // Fetch all needed data in one call
       const query = {
-        page,
-        limit,
+        page: debouncedPage,
+        limit: debouncedLimit,
         search
       };
 
@@ -144,12 +145,12 @@ export default function AdminLeaderboardPage() {
       const search = debouncedSearch || '';
 
       // Check if same params were already used
-      const currentParams: { city: string; year: number | undefined; page: number; limit: number; search: string } = { city, year, page, limit, search };
-      const sameParams = 
+      const currentParams: { city: string; year: number | undefined; page: number; limit: number; search: string } = { city, year, page: debouncedPage, limit: debouncedLimit, search };
+      const sameParams =
         lastFetchLeaderboardParams.current.city === city &&
         lastFetchLeaderboardParams.current.year === year &&
-        lastFetchLeaderboardParams.current.page === page &&
-        lastFetchLeaderboardParams.current.limit === limit &&
+        lastFetchLeaderboardParams.current.page === debouncedPage &&
+        lastFetchLeaderboardParams.current.limit === debouncedLimit &&
         lastFetchLeaderboardParams.current.search === search;
 
       if (sameParams) {
@@ -169,8 +170,8 @@ export default function AdminLeaderboardPage() {
 
         // Fetch all needed data in one call
         const query = {
-          page,
-          limit,
+          page: debouncedPage,
+          limit: debouncedLimit,
           search
         };
 
@@ -208,7 +209,7 @@ export default function AdminLeaderboardPage() {
     };
 
     fetchLeaderboardData();
-  }, [page, limit, lCity, lYear, debouncedSearch, isInit]);
+  }, [debouncedPage, debouncedLimit, lCity, lYear, debouncedSearch, isInit]);
 
 
  
@@ -218,11 +219,11 @@ export default function AdminLeaderboardPage() {
     const params = new URLSearchParams();
     if (debouncedSearch) params.set('search', debouncedSearch);
     if (page > 1) params.set('page', page.toString());
-    if (limit !== 5) params.set('limit', limit.toString());
+    if (debouncedLimit !== 5) params.set('limit', debouncedLimit.toString());
 
     const newUrl = `/admin/leaderboard?${params.toString()}`;
     window.history.replaceState({}, '', newUrl);
-  }, [debouncedSearch, page, limit, isInit]);
+  }, [debouncedSearch, page, debouncedLimit, isInit]);
   useEffect(() => { updateUrl(); }, [updateUrl]);
 
   useEffect(() => {
@@ -240,10 +241,6 @@ export default function AdminLeaderboardPage() {
       <AdminLeaderboardHeader
         lastCalculated={leaderboardData?.last_calculated}
         onRefresh={() => handleRefresh(true)}
-      />
-
-       {/* Filter  */}
-      <FilterBar
         lSearch={lSearch}
         setLSearch={setLSearch}
         lCity={lCity}
@@ -254,7 +251,9 @@ export default function AdminLeaderboardPage() {
         yearOptionsObj={yearOptionsObj}
         allYears={allYears}
         mode="admin"
+        isLoading={leaderboardLoading}
       />
+
       <PodiumSection
         top3={leaderboardData?.leaderboard?.slice(0, 3) || []}
         loading={leaderboardLoading}

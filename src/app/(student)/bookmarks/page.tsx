@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Pagination } from '@/components/Pagination';
 import { bookmarkService } from '@/services/bookmark.service';
 import { Bookmark, BookmarksResponse } from '@/types/student/index.types';
@@ -10,6 +10,7 @@ import { BookmarkHeader } from '@/components/student/bookmarks/BookmarkHeader';
 import { BookmarkFilter } from '@/components/student/bookmarks/BookmarkFilter';
 import { BookmarkCard } from '@/components/student/bookmarks/BookmarkCard';
 import { BookmarkShimmer } from '@/components/student/bookmarks/BookmarkShimmer';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function BookmarksPage() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -30,16 +31,20 @@ export default function BookmarksPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [updatingBookmark, setUpdatingBookmark] = useState(false);
 
+  // Debounced values
+  const debouncedPage = useDebouncedValue(pagination.page, 300);
+  const debouncedLimit = useDebouncedValue(pagination.limit, 300);
+
   const isFetching = useRef(false);
   const lastFetchParams = useRef({ page: 1, limit: 10, sort: 'recent', filter: 'all' });
 
-  const fetchBookmarks = async () => {
-    const currentParams = { page: pagination.page, limit: pagination.limit, sort: sortBy, filter: filterBy };
+  const fetchBookmarks = useCallback(async () => {
+    const currentParams = { page: debouncedPage, limit: debouncedLimit, sort: sortBy, filter: filterBy };
 
     if (isFetching.current) {
       const sameParams =
-        lastFetchParams.current.page === pagination.page &&
-        lastFetchParams.current.limit === pagination.limit &&
+        lastFetchParams.current.page === debouncedPage &&
+        lastFetchParams.current.limit === debouncedLimit &&
         lastFetchParams.current.sort === sortBy &&
         lastFetchParams.current.filter === filterBy;
 
@@ -52,8 +57,8 @@ export default function BookmarksPage() {
     try {
       setLoading(true);
       const response = await bookmarkService.getBookmarks({
-        page: pagination.page,
-        limit: pagination.limit,
+        page: debouncedPage,
+        limit: debouncedLimit,
         sort: sortBy,
         filter: filterBy
       });
@@ -72,11 +77,11 @@ export default function BookmarksPage() {
       setLoading(false);
       isFetching.current = false;
     }
-  };
+  }, [debouncedPage, debouncedLimit, sortBy, filterBy]);
 
   useEffect(() => {
     fetchBookmarks();
-  }, [pagination.page, pagination.limit, sortBy, filterBy]);
+  }, [fetchBookmarks]);
 
   const handleDeleteBookmark = (bookmark: Bookmark) => {
     setDeletingBookmark(bookmark);
@@ -149,10 +154,14 @@ export default function BookmarksPage() {
       {/* PAGINATION */}
       <div className="mt-8">
         <Pagination
-          currentPage={pagination.page}
+          currentPage={debouncedPage}
           totalItems={pagination.total}
-          limit={pagination.limit}
+          limit={debouncedLimit}
           onPageChange={(page) => setPagination(prev => ({ ...prev, page }))}
+          onLimitChange={(limit) => {
+            setPagination(prev => ({ ...prev, limit }));
+          }}
+          showLimitSelector={true}
         />
       </div>
 

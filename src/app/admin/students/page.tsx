@@ -19,6 +19,7 @@ import StudentsTable from '@/components/admin/students/StudentsTable';
 import StudentsModals from '@/components/admin/students/StudentsModals';
 import StudentsSkeleton from '@/components/admin/students/StudentsSkeleton';
 import { createStudentSchema, updateStudentSchema, CreateStudentInput, UpdateStudentInput } from '@/schemas/student.schema';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function AdminStudentsPage() {
   const router = useRouter();
@@ -33,6 +34,10 @@ export default function AdminStudentsPage() {
   // URL State
   const [sSearch, setSSearch] = useState(searchParams.get('search') || '');
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
+
+  // Debounced values
+  const debouncedSearch = useDebouncedValue(sSearch, 500);
+  const debouncedPage = useDebouncedValue(page, 300);
 
   // Modals
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -75,7 +80,8 @@ export default function AdminStudentsPage() {
 
   // Pagination
   const [limit, setLimit] = useState(10);
-  
+  const debouncedLimit = useDebouncedValue(limit, 300);
+
   // Refs for preventing double API calls
   const isFetchingStudents = useRef(false);
   const lastFetchStudentsParams = useRef<{ batchSlug?: string; page: number; limit: number; search: string }>({
@@ -85,10 +91,10 @@ export default function AdminStudentsPage() {
   });
   const updateUrl = useCallback(() => {
     const params = new URLSearchParams();
-    if (sSearch) params.set('search', sSearch);
+    if (debouncedSearch) params.set('search', debouncedSearch);
     if (page > 1) params.set('page', page.toString());
     router.replace(`/admin/students?${params.toString()}`);
-  }, [sSearch, page, router]);
+  }, [debouncedSearch, page, router]);
 
   const fetchStudents = useCallback(async () => {
     if (!selectedBatch) return;
@@ -99,12 +105,12 @@ export default function AdminStudentsPage() {
     }
 
     // Check if same params were already used
-    const currentParams = { batchSlug: selectedBatch.slug, page, limit, search: sSearch };
-    const sameParams = 
+    const currentParams = { batchSlug: selectedBatch.slug, page: debouncedPage, limit: debouncedLimit, search: debouncedSearch };
+    const sameParams =
       lastFetchStudentsParams.current.batchSlug === selectedBatch.slug &&
-      lastFetchStudentsParams.current.page === page &&
-      lastFetchStudentsParams.current.limit === limit &&
-      lastFetchStudentsParams.current.search === sSearch;
+      lastFetchStudentsParams.current.page === debouncedPage &&
+      lastFetchStudentsParams.current.limit === debouncedLimit &&
+      lastFetchStudentsParams.current.search === debouncedSearch;
 
     if (sameParams) {
       return;
@@ -114,8 +120,8 @@ export default function AdminStudentsPage() {
     lastFetchStudentsParams.current = currentParams;
     setLoading(true);
     try {
-      const p: { page: number; limit: number; batchSlug: string; search?: string } = { page, limit, batchSlug: selectedBatch.slug };
-      if (sSearch) p.search = sSearch;
+      const p: { page: number; limit: number; batchSlug: string; search?: string } = { page: debouncedPage, limit: debouncedLimit, batchSlug: selectedBatch.slug };
+      if (debouncedSearch) p.search = debouncedSearch;
 
       const res = await getAdminStudents(p);
       setStudents(res.students);
@@ -128,7 +134,7 @@ export default function AdminStudentsPage() {
       setLoading(false);
       isFetchingStudents.current = false;
     }
-  }, [sSearch, page, limit, selectedBatch]);
+  }, [debouncedSearch, debouncedPage, debouncedLimit, selectedBatch]);
 
   useEffect(() => {
     updateUrl();

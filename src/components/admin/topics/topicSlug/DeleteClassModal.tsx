@@ -11,7 +11,7 @@ import {
    DialogFooter,
    DialogDescription,
 } from "@/components/ui/dialog";
-import { Trash2 } from 'lucide-react';
+import { Trash2, AlertTriangle } from 'lucide-react';
 
 interface DeleteClassModalProps {
    isOpen: boolean;
@@ -25,6 +25,8 @@ interface DeleteClassModalProps {
 export default function DeleteClassModal({ isOpen, onClose, onSuccess, batchSlug, topicSlug, classData }: DeleteClassModalProps) {
    const [submitting, setSubmitting] = useState(false);
    const [formError, setFormError] = useState('');
+
+   const canDelete = (classData?.questionCount ?? 0) === 0;
 
    const handleDelete = useCallback(async () => {
       setFormError('');
@@ -62,7 +64,7 @@ export default function DeleteClassModal({ isOpen, onClose, onSuccess, batchSlug
                   Delete Class
                </DialogTitle>
                <DialogDescription className="text-sm text-muted-foreground">
-                  This action cannot be undone and will detach all questions synced to this module.
+                  Are you sure you want to delete "{classData?.class_name}"? This action cannot be undone.
                </DialogDescription>
             </DialogHeader>
 
@@ -75,11 +77,20 @@ export default function DeleteClassModal({ isOpen, onClose, onSuccess, batchSlug
                   <p className="text-sm font-semibold text-foreground">
                      {classData?.class_name}
                   </p>
-                  <p className="text-xs text-muted-foreground font-mono">
-                     {classData?.slug}
+                  <p className="text-xs text-muted-foreground">
+                     {classData?.questionCount || 0} questions attached
                   </p>
                </div>
             </div>
+
+            {(classData?.questionCount ?? 0) > 0 && (
+               <div className="mt-4 border border-yellow-500/30 bg-yellow-500/10 rounded-2xl p-4 flex gap-3">
+                  <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
+                  <div className="text-sm text-yellow-400">
+                     This class cannot be deleted because it still has active questions.
+                  </div>
+               </div>
+            )}
 
             {formError && (
                <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-lg">
@@ -101,7 +112,7 @@ export default function DeleteClassModal({ isOpen, onClose, onSuccess, batchSlug
                   type="button"
                   variant="destructive"
                   onClick={handleDelete}
-                  disabled={submitting}
+                  disabled={submitting || !canDelete}
                   className="rounded-xl px-6 shadow-sm hover:shadow-md transition"
                >
                   {submitting ? "Deleting..." : "Confirm Delete"}

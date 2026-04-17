@@ -17,6 +17,7 @@ import {
 import { ClassesTableShimmer } from '@/components/admin/topics/topicSlug/ClassesTableShimmer';
 import { Pagination } from '@/components/Pagination';
 import { Class } from '@/types/admin/index.types';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function AdminClassesPage() {
   const params = useParams();
@@ -30,6 +31,11 @@ export default function AdminClassesPage() {
   const [limit, setLimit] = useState(20);
   const [totalRecords, setTotalRecords] = useState(0);
   const [topicDetails, setTopicDetails] = useState<{ topic_name: string; photo_url?: string; description?: string } | null>(null);
+
+  // Debounced values
+  const debouncedSearch = useDebouncedValue(search, 500);
+  const debouncedPage = useDebouncedValue(page, 300);
+  const debouncedLimit = useDebouncedValue(limit, 300);
 
   // Modals
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -54,12 +60,12 @@ export default function AdminClassesPage() {
     }
 
     // Check if same params were already used
-    const currentParams = { topicSlug, page, limit, search };
-    const sameParams = 
+    const currentParams = { topicSlug, page: debouncedPage, limit: debouncedLimit, search: debouncedSearch };
+    const sameParams =
       lastFetchParams.current.topicSlug === topicSlug &&
-      lastFetchParams.current.page === page &&
-      lastFetchParams.current.limit === limit &&
-      lastFetchParams.current.search === search;
+      lastFetchParams.current.page === debouncedPage &&
+      lastFetchParams.current.limit === debouncedLimit &&
+      lastFetchParams.current.search === debouncedSearch;
 
     if (sameParams) {
       return;
@@ -70,9 +76,9 @@ export default function AdminClassesPage() {
     setLoading(true);
     try {
       const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
-        ...(search && { search })
+        page: debouncedPage.toString(),
+        limit: debouncedLimit.toString(),
+        ...(debouncedSearch && { search: debouncedSearch })
       });
       const response = await apiClient.get(`/api/admin/${selectedBatch.slug}/topics/${topicSlug}/classes?${params}`);
       setClassesList(response.data.data || []);
@@ -89,11 +95,11 @@ export default function AdminClassesPage() {
 
   useEffect(() => {
     setPage(1); // Reset to page 1 when search changes
-  }, [search]);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     fetchClasses();
-  }, [selectedBatch, topicSlug, page, limit, search]);
+  }, [selectedBatch, topicSlug, debouncedPage, debouncedLimit, debouncedSearch]);
 
   const openEdit = (cls: Class) => {
     setSelectedClass(cls);

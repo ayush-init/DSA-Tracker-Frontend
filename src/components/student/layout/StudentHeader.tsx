@@ -83,14 +83,24 @@ const DrawerNavItem = ({ href, icon: Icon, label, isActive, onClick }: {
     href={href}
     onClick={onClick}
     className={`
-      flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-200
+      relative flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-200
       ${isActive
-        ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/30'
+        ? 'text-primary'
         : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
       }
     `}
   >
-    <Icon className="w-5 h-5" />
+    {/* Active Neon Indicator */}
+    {isActive && (
+      <span
+        className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-primary shadow-[0_0_12px_rgba(204,255,0,0.9)]"
+      />
+    )}
+    <Icon
+      className={`w-5 h-5 transition-all duration-200 ${
+        isActive ? 'text-primary drop-shadow-[0_0_10px_rgba(204,255,0,0.9)]' : ''
+      }`}
+    />
     <span>{label}</span>
   </Link>
 );

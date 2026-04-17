@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { studentLeaderboardService } from "@/services/student/leaderboard.service";
 import { studentAuthService } from "@/services/student/auth.service";
 import { EvaluationModal } from "@/components/student/leaderboard/EvaluationModal";
-import { FilterBar } from "@/components/student/leaderboard/FilterBar";
 import { LeaderboardTable } from "@/components/student/leaderboard/LeaderboardTable";
 import { TimerLeaderboard } from "@/components/student/leaderboard/TimerLeaderboard";
 import { YourRank } from "@/components/student/leaderboard/YourRank";
@@ -13,11 +12,13 @@ import { isStudentToken, clearAuthTokens } from "@/lib/auth-utils";
 import PodiumSection from "@/components/student/leaderboard/PodiumSection";
 import { LeaderboardHeader } from "@/components/student/leaderboard/LeaderboardHeader";
 import { LeaderboardCity, LeaderboardData } from '@/types/student/index.types';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function StudentLeaderboardPage() {
   const [lCity, setLCity] = useState<LeaderboardCity['city_name']>('All Cities');
   const [lYear, setLYear] = useState<number | null>(null);
   const [lSearch, setLSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(lSearch, 500);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Get current student data to set default city and year
@@ -33,7 +34,7 @@ export default function StudentLeaderboardPage() {
 
   // Extract available years from API response
   const { data: leaderboardData, isLoading, error, refetch } = useQuery({
-    queryKey: ['studentLeaderboard', lCity === 'all' ? 'all' : lCity, lYear, lSearch],
+    queryKey: ['studentLeaderboard', lCity === 'all' ? 'all' : lCity, lYear, debouncedSearch],
     queryFn: async () => {
       // Check if we have a student token before making the request
       if (!isStudentToken()) {
@@ -53,7 +54,7 @@ export default function StudentLeaderboardPage() {
         year: lYear,
       };
 
-      return await studentLeaderboardService.getLeaderboard(filters, lSearch);
+      return await studentLeaderboardService.getLeaderboard(filters, debouncedSearch);
     },
     staleTime: 5 * 60 * 1000,
     enabled: !!lYear, // Only run query when we have a valid year
@@ -105,19 +106,16 @@ export default function StudentLeaderboardPage() {
     <>
 
       <YourRank yourRank={data?.yourRank} />
-      <div className="max-w-325 xl:max-w-275 2xl:max-w-325  mx-auto px-8 py-2">
+      <div className="max-w-375 xl:max-w-275 2xl:max-w-375  mx-auto px-8 py-2">
 
         <LeaderboardHeader
           lCity={lCity}
           lYear={lYear}
           lastUpdated={data?.last_calculated}
-        />
-
-        <FilterBar
           lSearch={lSearch}
           setLSearch={setLSearch}
-          lCity={lCity}
           setLCity={setLCity}
+          setLYear={setLYear}
           cityOptionsObj={[
             ...(isLoading ? [
               { value: 'loading', label: 'Loading...' }
@@ -127,8 +125,6 @@ export default function StudentLeaderboardPage() {
               label: city.city_name
             })) || [])
           ]}
-          setLYear={setLYear}
-          lYear={lYear}
           yearOptionsObj={[
             ...(isLoading ? [] : yearOptions.map((y: number) => ({
               value: y.toString(),
@@ -137,7 +133,6 @@ export default function StudentLeaderboardPage() {
           ]}
           allYears={isLoading ? [] : yearOptions}
           isLoading={combinedLoading}
-          mode="student"
         />
         <PodiumSection
           top3={data?.top10?.slice(0, 3) || []}

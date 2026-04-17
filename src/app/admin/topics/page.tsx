@@ -16,6 +16,7 @@ import { Pagination } from '@/components/Pagination';
 import TopicsPageShimmer from '@/components/admin/topics/topic/TopicShimmer';
 import { Topic } from '@/types/admin/topic.types';
 import { useTopics } from '@/hooks/admin/useTopics';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function AdminTopicsPage() {
    const { selectedBatch, isLoadingContext } = useAdminStore();
@@ -25,11 +26,12 @@ export default function AdminTopicsPage() {
 
    // URL Params State
    const [search, setSearch] = useState(searchParams.get('search') || '');
-   const [debouncedSearch, setDebouncedSearch] = useState(search);
    const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
    const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'recent');
 
-
+   // Debounced values
+   const debouncedSearch = useDebouncedValue(search, 500);
+   const debouncedPage = useDebouncedValue(page, 300);
 
    // Modals
    const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -39,26 +41,26 @@ export default function AdminTopicsPage() {
 
    //Pagination
    const [limit, setLimit] = useState(20);
-   // Debounce search
+   const debouncedLimit = useDebouncedValue(limit, 300);
+
+   // Reset page to 1 when search changes
    useEffect(() => {
-      const handler = setTimeout(() => {
-         setDebouncedSearch(search);
-         setPage(1); // Reset to page 1 on search
-      }, 500);
-      return () => clearTimeout(handler);
-   }, [search]);
+      if (search !== debouncedSearch) {
+         setPage(1);
+      }
+   }, [debouncedSearch, search]);
 
    // Sync URL
    useEffect(() => {
       const params = new URLSearchParams();
       if (debouncedSearch) params.set('search', debouncedSearch);
       if (page > 1) params.set('page', page.toString());
-      if (limit !== 20) params.set('limit', limit.toString());
+      if (debouncedLimit !== 20) params.set('limit', debouncedLimit.toString());
       if (sortBy !== 'recent') params.set('sortBy', sortBy);
 
       const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
       router.replace(newUrl, { scroll: false });
-   }, [debouncedSearch, page, sortBy, router]);
+   }, [debouncedSearch, page, debouncedLimit, sortBy, router]);
 
    const {
       topics,
@@ -67,8 +69,8 @@ export default function AdminTopicsPage() {
       refetch,
    } = useTopics({
       batchSlug: selectedBatch?.slug,
-      page,
-      limit,
+      page: debouncedPage,
+      limit: debouncedLimit,
       search: debouncedSearch,
       sortBy,
    });

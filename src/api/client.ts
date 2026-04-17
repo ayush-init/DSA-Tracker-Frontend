@@ -228,6 +228,12 @@ function shouldHandleSilently(
     return true;
   }
 
+  // Delete topic - handled by modal (shows error in modal instead of toast)
+  // URL pattern: /api/admin/topics/{slug} - single topic endpoint is used for delete
+  if (url.match(/\/api\/admin\/topics\/[^\/]+$/)) {
+    return true;
+  }
+
   return false;
 }
 

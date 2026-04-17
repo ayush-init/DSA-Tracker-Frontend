@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { studentPracticeService } from '@/services/student/practice.service';
 import { PracticeFilters } from '@/types/student/index.types';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -9,6 +9,7 @@ import { PracticeResults } from '@/components/student/practice/PracticeResults';
 import { PracticeFilters as PracticeFiltersComponent } from '@/components/student/practice/PracticeFilters';
 import { PracticeHeader } from '@/components/student/practice/PracticeHeader';
 import { PracticeQuestion, PracticeFilterOptions } from '@/types/student/index.types';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function PracticePage() {
   const router = useRouter();
@@ -25,6 +26,15 @@ export default function PracticePage() {
     page: Number(searchParams.get('page')) || 1,
     limit: 10
   });
+
+  // Ref for non-debounced filters to avoid stale closures
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
+
+  // Debounced values
+  const debouncedSearch = useDebouncedValue(filters.search, 500);
+  const debouncedPage = useDebouncedValue(filters.page, 300);
+  const debouncedLimit = useDebouncedValue(filters.limit, 300);
 
   const [questions, setQuestions] = useState<PracticeQuestion[]>([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -43,7 +53,13 @@ export default function PracticePage() {
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await studentPracticeService.getQuestions(filters);
+      const debouncedFilters = {
+        ...filtersRef.current,
+        search: debouncedSearch,
+        page: debouncedPage,
+        limit: debouncedLimit
+      };
+      const data = await studentPracticeService.getQuestions(debouncedFilters);
       setQuestions(data.questions || []);
 
       // Extract total items from backend response structure
@@ -64,7 +80,7 @@ export default function PracticePage() {
 
       // Update URL safely
       const params = new URLSearchParams();
-      Object.entries(filters).forEach(([key, val]) => {
+      Object.entries(debouncedFilters).forEach(([key, val]) => {
         if (val) params.set(key, String(val));
       });
       router.replace(`?${params.toString()}`, { scroll: false });
@@ -75,15 +91,11 @@ export default function PracticePage() {
     } finally {
       setLoading(false);
     }
-  }, [filters, router]);
+  }, [debouncedSearch, debouncedPage, debouncedLimit, router]);
 
   useEffect(() => {
-    // Debounce search text changes
-    const timeout = setTimeout(() => {
-      fetchQuestions();
-    }, 400);
-    return () => clearTimeout(timeout);
-  }, [filters, fetchQuestions]);
+    fetchQuestions();
+  }, [fetchQuestions]);
 
   const handleFilterChange = (key: keyof PracticeFilters, value: unknown) => {
     setFilters((prev: PracticeFilters) => ({
@@ -124,9 +136,9 @@ export default function PracticePage() {
         {(questions.length > 0 || loading) && (
           <div className="mt-8">
             <Pagination
-              currentPage={filters.page || 1}
+              currentPage={debouncedPage || 1}
               totalItems={totalItems}
-              limit={filters.limit || 10}
+              limit={debouncedLimit || 10}
               onPageChange={(page) => handleFilterChange('page', page)}
               onLimitChange={(limit) => handleFilterChange('limit', limit)}
               showLimitSelector={true}

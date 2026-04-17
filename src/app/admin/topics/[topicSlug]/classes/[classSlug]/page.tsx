@@ -19,7 +19,7 @@ import {
 import { Pagination } from '@/components/Pagination';
 import { DeleteModal } from '@/components/DeleteModal';
 import { ClassAssignedQuestion, ApiError } from '@/types/admin/index.types';
-
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function AdminClassDetailsPage() {
    const params = useParams();
@@ -37,6 +37,11 @@ export default function AdminClassDetailsPage() {
    const [assignedTotalPages, setAssignedTotalPages] = useState(1);
    const [assignedTotalCount, setAssignedTotalCount] = useState(0);
    const [limit, setLimit] = useState(10);
+
+   // Debounced values
+   const debouncedSearch = useDebouncedValue(search, 500);
+   const debouncedPage = useDebouncedValue(assignedPage, 300);
+   const debouncedLimit = useDebouncedValue(limit, 300);
 
    // Assign Modal States
    const [isAssignOpen, setIsAssignOpen] = useState(false);
@@ -59,7 +64,7 @@ export default function AdminClassDetailsPage() {
    });
    
 
-   const fetchAssigned = async (page: number = 1, searchQuery: string = search) => {
+   const fetchAssigned = async (page: number = 1, searchQuery: string = debouncedSearch) => {
       if (!selectedBatch) return;
 
       // Skip if already fetching
@@ -68,13 +73,13 @@ export default function AdminClassDetailsPage() {
       }
 
       // Check if same params were already used
-      const currentParams = { topicSlug, classSlug, page, limit, search: searchQuery };
-      const sameParams = 
+      const currentParams = { topicSlug, classSlug, page: debouncedPage, limit: debouncedLimit, search: debouncedSearch };
+      const sameParams =
          lastFetchAssignedParams.current.topicSlug === topicSlug &&
          lastFetchAssignedParams.current.classSlug === classSlug &&
-         lastFetchAssignedParams.current.page === page &&
-         lastFetchAssignedParams.current.limit === limit &&
-         lastFetchAssignedParams.current.search === searchQuery;
+         lastFetchAssignedParams.current.page === debouncedPage &&
+         lastFetchAssignedParams.current.limit === debouncedLimit &&
+         lastFetchAssignedParams.current.search === debouncedSearch;
 
       if (sameParams) {
          return;
@@ -84,8 +89,8 @@ export default function AdminClassDetailsPage() {
       lastFetchAssignedParams.current = currentParams;
       setLoading(true);
       try {
-         const params: { page: number; limit: number; search?: string } = { page, limit };
-         if (searchQuery) params.search = searchQuery;
+         const params: { page: number; limit: number; search?: string } = { page: debouncedPage, limit: debouncedLimit };
+         if (debouncedSearch) params.search = debouncedSearch;
 
          const response = await apiClient.get(`/api/admin/${selectedBatch.slug}/topics/${topicSlug}/classes/${classSlug}/questions`, { params });
          const data = response.data;
@@ -109,8 +114,15 @@ export default function AdminClassDetailsPage() {
 
 
    useEffect(() => {
-      fetchAssigned(assignedPage, search);
-   }, [selectedBatch, topicSlug, classSlug, assignedPage, search, limit]);
+      fetchAssigned(debouncedPage, debouncedSearch);
+   }, [selectedBatch, topicSlug, classSlug, debouncedPage, debouncedSearch, debouncedLimit]);
+
+   // Reset page to 1 when search changes
+   useEffect(() => {
+      if (search !== debouncedSearch) {
+         setAssignedPage(1);
+      }
+   }, [debouncedSearch, search]);
 
 
    const handleRemoveQuestion = async (questionId: number) => {
@@ -177,7 +189,7 @@ export default function AdminClassDetailsPage() {
 
          <ClassDetailFilter
             search={search}
-            onSearchChange={(value) => { setSearch(value); setAssignedPage(1); }}
+            onSearchChange={(value) => { setSearch(value); }}
             assignedTotalCount={assignedTotalCount}
          />
 
