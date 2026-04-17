@@ -26,7 +26,7 @@ export function LeaderboardHeader({
 }: LeaderboardHeaderProps) {
 
   return (
-    <div className="glass backdrop-blur-sm rounded-2xl px-4 py-3 mb-4">
+    <div className="glass backdrop-blur-sm rounded-2xl px-4 py-3 mb-4 relative z-10">
 
       {/* 🔥 ROW 1 → TITLE + TIMER */}
       <div className="flex items-center justify-between gap-2 mb-1">
@@ -79,13 +79,13 @@ export function LeaderboardHeader({
         </div>
 
         {/* RIGHT → FILTERS */}
-        <div className="flex items-center gap-2 flex-wrap sm:justify-end">
+        <div className="flex items-center gap-2 flex-wrap sm:justify-end relative z-20">
 
           <Select 
             value={lCity} 
             onChange={(v: string | number) => setLCity(String(v))}
             options={cityOptionsObj}
-            className="w-[110px] sm:w-[130px] h-8 text-xs sm:text-sm border border-border/40"
+            className="w-auto h-8 text-xs sm:text-sm border border-border/40"
             icon={<MapPin className="w-3 h-3" />}
             placeholder="City"
           />
@@ -94,7 +94,7 @@ export function LeaderboardHeader({
             value={lYear?.toString() || ''} 
             onChange={(v: string | number) => setLYear(Number(v))}
             options={yearOptionsObj}
-            className="w-[90px] sm:w-[110px] h-8 text-xs sm:text-sm border border-border/40"
+            className="w-auto h-8 text-xs sm:text-sm border border-border/40"
             icon={<CalendarDays className="w-3 h-3" />}
             placeholder="Year"
             disabled={!allYears || allYears.length === 0}

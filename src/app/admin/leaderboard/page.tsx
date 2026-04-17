@@ -8,6 +8,7 @@ import { getAdminLeaderboard } from '@/services/admin.service';
 import { LeaderboardTable } from '@/components/leaderboard/components/LeaderboardTable';
 import { AdminLeaderboardHeader } from '@/components/leaderboard/components/AdminLeaderboardHeader';
 import PodiumSection from '@/components/leaderboard/components/PodiumSection';
+import MobilePodiumSection from '@/components/leaderboard/components/MobilePodiumSection';
 import { LeaderboardData, ApiError, BatchSelection } from '@/types/admin/index.types';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
@@ -254,11 +255,23 @@ export default function AdminLeaderboardPage() {
         isLoading={leaderboardLoading}
       />
 
-      <PodiumSection
-        top3={leaderboardData?.leaderboard?.slice(0, 3) || []}
-        loading={leaderboardLoading}
-        selectedCity={lCity === 'All Cities' ? 'all' : lCity}
-      />
+      {/* Mobile Podium - Horizontal Layout */}
+      <div className="md:hidden">
+        <MobilePodiumSection
+          top3={leaderboardData?.leaderboard?.slice(0, 3) || []}
+          loading={leaderboardLoading}
+          selectedCity={lCity === 'All Cities' ? 'all' : lCity}
+        />
+      </div>
+
+      {/* Desktop Podium - Horizontal Layout */}
+      <div className="hidden md:block">
+        <PodiumSection
+          top3={leaderboardData?.leaderboard?.slice(0, 3) || []}
+          loading={leaderboardLoading}
+          selectedCity={lCity === 'All Cities' ? 'all' : lCity}
+        />
+      </div>
 
 
       <LeaderboardTable

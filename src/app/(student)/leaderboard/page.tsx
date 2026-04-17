@@ -10,6 +10,7 @@ import { TimerLeaderboard } from "@/components/student/leaderboard/TimerLeaderbo
 import { YourRank } from "@/components/student/leaderboard/YourRank";
 import { isStudentToken, clearAuthTokens } from "@/lib/auth-utils";
 import PodiumSection from "@/components/student/leaderboard/PodiumSection";
+import MobilePodiumSection from "@/components/student/leaderboard/MobilePodiumSection";
 import { LeaderboardHeader } from "@/components/student/leaderboard/LeaderboardHeader";
 import { LeaderboardCity, LeaderboardData } from '@/types/student/index.types';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -134,12 +135,25 @@ export default function StudentLeaderboardPage() {
           allYears={isLoading ? [] : yearOptions}
           isLoading={combinedLoading}
         />
-        <PodiumSection
-          top3={data?.top10?.slice(0, 3) || []}
-          loading={combinedLoading}
-          error={error?.message}
-          selectedCity={lCity === 'All Cities' ? 'all' : lCity}
-        />
+        {/* Mobile Podium - Vertical Layout */}
+        <div className="md:hidden">
+          <MobilePodiumSection
+            top3={data?.top10?.slice(0, 3) || []}
+            loading={combinedLoading}
+            error={error?.message}
+            selectedCity={lCity === 'All Cities' ? 'all' : lCity}
+          />
+        </div>
+
+        {/* Desktop Podium - Horizontal Layout */}
+        <div className="hidden md:block">
+          <PodiumSection
+            top3={data?.top10?.slice(0, 3) || []}
+            loading={combinedLoading}
+            error={error?.message}
+            selectedCity={lCity === 'All Cities' ? 'all' : lCity}
+          />
+        </div>
         <div className="flex flex-col space-y-6">
 
           <LeaderboardTable

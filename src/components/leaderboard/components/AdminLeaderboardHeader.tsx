@@ -43,52 +43,47 @@ export function AdminLeaderboardHeader({
   onResetPodium
 }: AdminLeaderboardHeaderProps) {
   return (
-    <div className="glass backdrop-blur-2xl mb-5 px-4 py-3 rounded-2xl">
-      
+    <div className="glass backdrop-blur-sm rounded-2xl px-4 py-3 mb-4 relative z-10">
+
       {/* 🔥 ROW 1 → TITLE + TIMER */}
-      <div className="flex items-center justify-between gap-2 mb-2">
+      <div className="flex items-center justify-between gap-2 mb-1">
+
         {/* LEFT */}
-        <div className="flex flex-col gap-1">
-          {/* TITLE ROW */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              Admin <span className="text-primary">Leaderboard</span>
-            </h2>
+        <div className="flex items-center gap-2 flex-wrap">
 
-            {/* Modal aligned properly */}
-            <div className="shrink-0">
-               <EvaluationModal/>
-            </div>
-          </div>
+          <h2 className="text-sm sm:text-2xl font-semibold text-foreground whitespace-nowrap">
+            Admin
+            <span className="ms-1 text-primary">Leaderboard</span>
+          </h2>
 
-          {/* SUBTEXT */}
-          <p className="text-muted-foreground text-xs sm:text-sm inline-flex items-center p-0 m-0 rounded-md w-fit">
-            Analytics driven precisely by backend mapping constraints.
-          </p>
+          <EvaluationModal />
         </div>
 
         {/* RIGHT */}
-        <div className="shrink-0">
-          <TimerLeaderboard
-            lastUpdated={lastCalculated ?? undefined}
-            refreshInterval={4}
-            onRefresh={onRefresh}
-          />
-        </div>
+        <TimerLeaderboard
+          lastUpdated={lastCalculated ?? undefined}
+          refreshInterval={4}
+          onRefresh={onRefresh}
+        />
       </div>
+
+
 
       {/* 🔥 ROW 2 → SEARCH + RESET + FILTERS */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+
         {/* LEFT → SEARCH + RESET */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
+
           {/* Search */}
           <div className="relative w-full sm:w-[260px] md:w-[300px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-foreground" />
-            <Input 
+
+            <Input
               placeholder="Search by name and username..."
               value={lSearch}
               onChange={(e) => setLSearch(e.target.value)}
-              className="!pl-8 w-full h-8 text-xs sm:text-sm border border-border/40"
+              className="!pl-8 w-full h-8 text-xs sm:text-sm"
             />
           </div>
 
@@ -105,21 +100,22 @@ export function AdminLeaderboardHeader({
         </div>
 
         {/* RIGHT → FILTERS */}
-        <div className="flex items-center gap-2 flex-wrap sm:justify-end">
-          <Select 
-            value={lCity} 
+        <div className="flex items-center gap-2 flex-wrap sm:justify-end relative z-20">
+
+          <Select
+            value={lCity}
             onChange={(v: string | number) => setLCity(String(v))}
             options={cityOptionsObj}
-            className="w-[110px] sm:w-[130px] h-8 text-xs sm:text-sm border border-border/40"
+            className="w-auto h-8 text-xs sm:text-sm border border-border/40"
             icon={<MapPin className="w-3 h-3" />}
             placeholder="City"
           />
 
-          <Select 
-            value={lYear?.toString() || ''} 
+          <Select
+            value={lYear?.toString() || ''}
             onChange={(v: string | number) => setLYear(Number(v))}
             options={yearOptionsObj}
-            className="w-[90px] sm:w-[110px] h-8 text-xs sm:text-sm border border-border/40"
+            className="w-auto h-8 text-xs sm:text-sm border border-border/40"
             icon={<CalendarDays className="w-3 h-3" />}
             placeholder="Year"
             disabled={!allYears || allYears.length === 0}
