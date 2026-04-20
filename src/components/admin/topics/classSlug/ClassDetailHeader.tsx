@@ -54,6 +54,7 @@ export default function ClassDetailHeader({ selectedBatch, topicSlug, classSlug,
    };
 
    const descriptionBullets = classDetails?.description ? parseDescriptionToBullets(classDetails.description) : [];
+   const hasDescription = descriptionBullets.length > 0;
 
    return (
       <>
@@ -115,7 +116,7 @@ export default function ClassDetailHeader({ selectedBatch, topicSlug, classSlug,
                </h1>
 
                {/* 🔽 ACCORDION */}
-               {classDetails.description && (
+               {hasDescription && (
                   <div className="mt-4 border border-border/40 rounded-2xl overflow-hidden">
 
                      {/* HEADER */}

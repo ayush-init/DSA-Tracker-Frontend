@@ -529,3 +529,85 @@ button:focus {
     right: 16px !important;
   }
 }
+
+
+
+
+@layer components {
+  .rte .ql-toolbar,
+.rte .ql-container {
+  border: none !important;
+}
+  /* Wrapper */
+  .rte {
+    background: var(--glass-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+
+  /* Toolbar */
+  .rte .ql-toolbar {
+    border: none;
+    border-bottom: 1px solid var(--border) !important;
+    background: transparent;
+    padding: 8px 10px;
+  }
+
+  .rte .ql-toolbar button {
+    border-radius: 8px;
+    padding: 4px;
+    transition: all 0.2s ease;
+  }
+
+  /* Editor */
+  .rte .ql-container {
+    border: none;
+    background: transparent;
+  }
+
+  .rte .ql-editor {
+    min-height: 110px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--foreground);
+    line-height: 1.6;
+  }
+
+  /* Placeholder */
+  .rte .ql-editor.ql-blank::before {
+    color: var(--muted-foreground) !important;
+    opacity: 1;
+    font-style: normal;
+  }
+
+  /* Default icon color */
+.rte .ql-toolbar .ql-stroke {
+  stroke: var(--muted-foreground);
+}
+
+.rte .ql-toolbar .ql-fill {
+  fill: var(--muted-foreground);
+}
+
+/* 🔥 ACTIVE (when bold/italic is selected) */
+.rte .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--primary) !important;
+}
+
+.rte .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--primary) !important;
+}
+
+/* 🔥 HOVER (optional) */
+.rte .ql-toolbar button:hover .ql-stroke {
+  stroke: var(--primary) !important;
+}
+
+.rte .ql-toolbar button:hover .ql-fill {
+  fill: var(--primary) !important;
+}
+}

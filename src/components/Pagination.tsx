@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,9 @@ interface PaginationProps {
 export function Pagination({ currentPage, totalItems, limit, onPageChange, onLimitChange, showLimitSelector = false, loading = false }: PaginationProps) {
   const totalPages = Math.ceil(totalItems / limit) || 1;
   const [inputValue, setInputValue] = useState(String(limit));
+  const [showErrorPopover, setShowErrorPopover] = useState(false);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const errorPopoverTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Sync input value with external limit prop
   useEffect(() => {
@@ -28,25 +32,59 @@ export function Pagination({ currentPage, totalItems, limit, onPageChange, onLim
     
     // Allow empty input or numeric input only
     if (value === '' || /^\d+$/.test(value)) {
+      // Prevent typing values > 100
+      const numValue = parseInt(value);
+      if (numValue > 100) {
+        // Show error popover
+        setShowErrorPopover(true);
+        
+        // Clear previous error timer
+        if (errorPopoverTimerRef.current) {
+          clearTimeout(errorPopoverTimerRef.current);
+        }
+        
+        // Hide popover after 2 seconds
+        errorPopoverTimerRef.current = setTimeout(() => {
+          setShowErrorPopover(false);
+        }, 2000);
+        
+        // Don't update inputValue (prevent typing > 100)
+        return;
+      }
+      
       setInputValue(value);
       
-      // If valid number in range, update external state
-      const numValue = parseInt(value);
-      if (numValue >= 1 && numValue <= 100 && onLimitChange) {
-        onLimitChange(numValue);
-        onPageChange(1);
+      // Clear previous timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
+      
+      // Debounce the limit change
+      debounceTimerRef.current = setTimeout(() => {
+        const parsedValue = parseInt(value);
+        if (parsedValue >= 1 && parsedValue <= 100 && onLimitChange) {
+          onLimitChange(parsedValue);
+          onPageChange(1);
+        } else if (value === '' && onLimitChange) {
+          setInputValue('5');
+          onLimitChange(5);
+          onPageChange(1);
+        }
+      }, 500);
     }
   };
 
-  const handleBlur = () => {
-    // If input is empty when it loses focus, reset to default
-    if (inputValue === '' && onLimitChange) {
-      setInputValue('5');
-      onLimitChange(5);
-      onPageChange(1);
-    }
-  };
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      if (errorPopoverTimerRef.current) {
+        clearTimeout(errorPopoverTimerRef.current);
+      }
+    };
+  }, []);
 
   if (totalItems === 0) {
     return null;
@@ -79,23 +117,37 @@ export function Pagination({ currentPage, totalItems, limit, onPageChange, onLim
         <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm flex-wrap">
           <span className="text-muted-foreground font-medium">Show</span>
 
-          <Input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={inputValue}
-            onChange={handleInputChange}
-            onBlur={handleBlur}
-            className="
-              w-17.5 sm:w-22.5 h-8 sm:h-9! rounded-2xl bg-transparent!
-              border border-border/40!
-              hover:bg-accent/60
-              transition
-              text-center
-              focus:ring-2 focus:ring-primary/20
-            "
-            placeholder="5"
-          />
+          <div className="relative">
+            <Input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={inputValue}
+              onChange={handleInputChange}
+              className="
+                w-17.5 sm:w-22.5 h-8 sm:h-9! rounded-2xl bg-transparent!
+                border border-border/40!
+                hover:bg-accent/60
+                transition
+                text-center
+                focus:ring-2 focus:ring-primary/20
+              "
+              placeholder="5"
+            />
+
+            <AnimatePresence>
+              {showErrorPopover && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-foreground text-background text-xs rounded-2xl whitespace-nowrap z-50"
+                >
+                  Limit must be below 100
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           <span className="text-muted-foreground font-medium hidden sm:inline">
             per page

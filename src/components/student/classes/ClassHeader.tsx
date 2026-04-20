@@ -53,6 +53,7 @@ export function ClassHeader({
   };
 
   const descriptionBullets = classData.description ? parseDescriptionToBullets(classData.description) : [];
+  const hasDescription = descriptionBullets.length > 0;
 
   return (
     <div className="mb-6 rounded-2xl bg-gradient-to-br from-background/80 to-background/40 glass backdrop-blur-3xl sm:p-6 shadow-sm">
@@ -127,7 +128,7 @@ export function ClassHeader({
       </div>
 
       {/* 🔽 ACCORDION */}
-      {classData.description && (
+      {hasDescription && (
         <div className="mt-4 border border-border/40 rounded-2xl overflow-hidden">
 
           {/* HEADER */}

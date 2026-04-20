@@ -11,6 +11,7 @@ import { BookmarkFilter } from '@/components/student/bookmarks/BookmarkFilter';
 import { BookmarkCard } from '@/components/student/bookmarks/BookmarkCard';
 import { BookmarkShimmer } from '@/components/student/bookmarks/BookmarkShimmer';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { Bookmark as BookmarkIcon } from 'lucide-react';
 
 export default function BookmarksPage() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -137,6 +138,12 @@ export default function BookmarksPage() {
 
       {loading ? (
         <BookmarkShimmer />
+      ) : bookmarks.length === 0 ? (
+        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground glass backdrop-blur-sm rounded-2xl border border-border border-dashed p-10">
+          <BookmarkIcon className="w-10 h-10 mb-4 opacity-50 text-muted-foreground" />
+          <div className="font-semibold text-foreground mb-1">No bookmarks found</div>
+          <div className="text-[13px]">Start bookmarking questions to track your progress.</div>
+        </div>
       ) : (
         <div className="space-y-3 p-5 rounded-2xl glass backdrop-blur-md">
           {bookmarks.map((bookmark) => (
