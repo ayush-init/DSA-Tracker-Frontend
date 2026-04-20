@@ -9,6 +9,36 @@ import {
   X
 } from 'lucide-react';
 
+// =============================================================================
+// TOAST DEDUPLICATION SYSTEM
+// =============================================================================
+
+// Set to track currently active toast IDs for deduplication
+const activeToastIds = new Set<string>();
+
+/**
+ * Generate a unique ID based on message content and type
+ * This ensures same error message + type = same ID
+ */
+function generateToastId(message: string, type: 'success' | 'error' | 'loading'): string {
+  // Simple hash function to create consistent ID from message + type
+  const content = `${type}:${message}`;
+  let hash = 0;
+  for (let i = 0; i < content.length; i++) {
+    const char = content.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return `toast-${Math.abs(hash)}`;
+}
+
+/**
+ * Clean up toast ID when toast is dismissed
+ */
+function cleanupToastId(id: string): void {
+  activeToastIds.delete(id);
+}
+
 // Custom premium toast renderer
 const PremiumToastRenderer = ({ toast: toastObj, title, description, icon, id }: any) => {
   const isSuccess = toastObj.type === 'success';
@@ -83,34 +113,79 @@ const PremiumToastRenderer = ({ toast: toastObj, title, description, icon, id }:
 // Premium SaaS toast variants
 export const glassToast = {
   success: (message: string, options?: any) => {
+    const toastId = generateToastId(message, 'success');
+
+    // If toast with same ID exists, dismiss it first
+    if (activeToastIds.has(toastId)) {
+      toast.dismiss(toastId);
+    }
+
+    // Track this toast as active
+    activeToastIds.add(toastId);
+
     return toast.custom((id) =>
       React.createElement(PremiumToastRenderer, {
         toast: { type: 'success', duration: 4000, ...options },
         title: message,
         id: id
       })
-      , { duration: 4000, ...options });
+      , {
+        id: toastId,
+        duration: 4000,
+        onDismiss: () => cleanupToastId(toastId),
+        ...options
+      });
   },
 
   error: (message: string, options?: any) => {
+    const toastId = generateToastId(message, 'error');
+
+    // If toast with same ID exists, dismiss it first
+    if (activeToastIds.has(toastId)) {
+      toast.dismiss(toastId);
+    }
+
+    // Track this toast as active
+    activeToastIds.add(toastId);
+
     return toast.custom((id) =>
       React.createElement(PremiumToastRenderer, {
         toast: { type: 'error', duration: 6000, ...options },
         title: message,
         id: id
       })
-      , { duration: 6000, ...options });
+      , {
+        id: toastId,
+        duration: 6000,
+        onDismiss: () => cleanupToastId(toastId),
+        ...options
+      });
   },
 
 
   loading: (message: string, options?: any) => {
+    const toastId = generateToastId(message, 'loading');
+
+    // If toast with same ID exists, dismiss it first
+    if (activeToastIds.has(toastId)) {
+      toast.dismiss(toastId);
+    }
+
+    // Track this toast as active
+    activeToastIds.add(toastId);
+
     return toast.custom((id) =>
       React.createElement(PremiumToastRenderer, {
         toast: { type: 'loading', duration: Infinity, ...options },
         title: message,
         id: id
       })
-      , { duration: Infinity, ...options });
+      , {
+        id: toastId,
+        duration: Infinity,
+        onDismiss: () => cleanupToastId(toastId),
+        ...options
+      });
   },
 
   // Promise-based toast for async operations

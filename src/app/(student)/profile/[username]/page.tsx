@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { studentProfileService } from '@/services/student/profile.service';
 import { studentAuthService } from '@/services/student/auth.service';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ import { useCanEditProfile } from '@/hooks/useCanEditProfile';
 
 export default function PublicProfilePage() {
   const params = useParams();
+  const router = useRouter();
   const username = params?.username as string;
   const [profileData, setProfileData] = useState<ProfileDataState>(null);
   const [loading, setLoading] = useState(true);
@@ -214,13 +215,19 @@ export default function PublicProfilePage() {
         }, 1000);
         return;
       }
-      await studentProfileService.updateUsername(usernameForm.username.trim());
-      await fetchProfileByUsername();
+      const newUsername = usernameForm.username.trim();
+      await studentProfileService.updateUsername(newUsername);
+      
+      // Update local state immediately to prevent "username not found" flash
+      setCurrentUser(prev => prev ? { ...prev, data: { ...prev.data, username: newUsername } } : null);
+      setProfileData(prev => prev ? { ...prev, student: { ...prev.student, username: newUsername } } : null);
+      setUsernameForm({ username: newUsername });
+      
       setShowUsernameEditModal(false);
       window.dispatchEvent(new CustomEvent('profileUpdated'));
-      const newUsername = usernameForm.username.trim();
+      
       if (newUsername !== username) {
-        window.location.href = `/profile/${newUsername}`;
+        router.push(`/profile/${newUsername}`);
       }
       showSuccess('Username updated successfully!');
     } catch (error: unknown) {
